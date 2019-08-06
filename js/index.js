@@ -3,8 +3,10 @@ let utils = new Utils('errorMessage');
 //let cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
 function init(){
 let video = document.getElementById('videoInput');
-//  cv['onRuntimeInitialized']=()=>{
-let cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
+let cameraCalibration;
+cv['onRuntimeInitialized']=()=>{
+  cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
+};
 // Try to read the pattern:
 //cv::Mat patternImage = cv::imread(argv[1]);
 let patternImage = new cv.Mat(video.height, video.width, cv.CV_8UC4);
@@ -18,7 +20,7 @@ if (patternImage.empty())
   }
   //cv::VideoCapture cap = cv::VideoCapture(0);
   let cap = new cv.VideoCapture(video);
-  processVideo(patternImage, calibration, cap);
+  processVideo(patternImage, cameraCalibration, cap);
 
   function processVideo(patternImage, calibration, capture){
 
@@ -53,7 +55,7 @@ if (patternImage.empty())
     } while (!shouldQuit);
   };
 };
-//};
+
 utils.loadOpenCv(() => {
 init();
 });
