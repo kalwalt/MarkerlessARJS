@@ -1,6 +1,5 @@
 let utils = new Utils('errorMessage');
-//CameraCalibration calibration(526.58037684199849f, 524.65577209994706f, 318.41744018680112f, 202.96659047014398f);
-//let cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
+
 function init(){
 let video = document.getElementById('videoInput');
 let cameraCalibration;
@@ -8,7 +7,6 @@ cv['onRuntimeInitialized']=()=>{
   cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
 };
 // Try to read the pattern:
-//cv::Mat patternImage = cv::imread(argv[1]);
 let patternImage = new cv.Mat(video.height, video.width, cv.CV_8UC4);
 patternImage = cv.imread('pinball');
 if (patternImage.empty())
@@ -18,16 +16,15 @@ if (patternImage.empty())
   }else if(patternImage){
     console.log("Image ok")
   }
-  //cv::VideoCapture cap = cv::VideoCapture(0);
+
   let cap = new cv.VideoCapture(video);
   processVideo(patternImage, cameraCalibration, cap);
 
   function processVideo(patternImage, calibration, capture){
 
     // Grab first frame to get the frame dimensions
-    //cv::Mat currentFrame;
-    let currentFrame = new cv.Mat();
-    capture >> currentFrame;
+    let currentFrame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+    capture.read(currentFrame);
 
     // Check the capture succeeded:
     if (currentFrame.empty())
@@ -44,7 +41,7 @@ if (patternImage.empty())
     let shouldQuit = false;
     do
     {
-        capture >> currentFrame;
+        capture.read(currentFrame);
         if (currentFrame.empty())
         {
             shouldQuit = true;
