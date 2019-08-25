@@ -25,5 +25,6 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
 bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline);
 
 bool isPatternPresent(ARPipeline& pipeline);
-
+/*
 bool patternPose(ARPipeline& pipeline);
+*/

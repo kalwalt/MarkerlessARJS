@@ -1,6 +1,7 @@
 #include "MarkerlessARJS.h"
 #include "emscripten.h"
 #include <opencv2/opencv.hpp>
+#include <string>
 #define NOMINMAX
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -57,11 +58,11 @@ bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline)
 
     // Draw information:
     if (pipeline.m_patternDetector.enableHomographyRefinement)
-        cv::putText(img, "Pose refinement: On   ('h' to switch off)", cv::Point(10,15), CV_FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
+        cv::putText(img, "Pose refinement: On   ('h' to switch off)", cv::Point(10,15), cv::FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
     else
-        cv::putText(img, "Pose refinement: Off  ('h' to switch on)",  cv::Point(10,15), CV_FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
+        cv::putText(img, "Pose refinement: Off  ('h' to switch on)",  cv::Point(10,15), cv::FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
 
-    cv::putText(img, "RANSAC threshold: " + ToString(pipeline.m_patternDetector.homographyReprojectionThreshold) + "( Use'-'/'+' to adjust)", cv::Point(10, 30), CV_FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
+    cv::putText(img, "RANSAC threshold: " + std::to_string(pipeline.m_patternDetector.homographyReprojectionThreshold) + "( Use'-'/'+' to adjust)", cv::Point(10, 30), cv::FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
 
     // Read the keyboard input:
     int keyCode = cv::waitKey(5);
@@ -94,8 +95,9 @@ bool isPatternPresent(const cv::Mat& cameraFrame, ARPipeline& pipeline) {
   return pipeline.processFrame(cameraFrame);
 
 }
-
+/*
 bool patternPose(ARPipeline& pipeline) {
   // Update a pattern pose:
   return pipeline.getPatternLocation();
 }
+*/

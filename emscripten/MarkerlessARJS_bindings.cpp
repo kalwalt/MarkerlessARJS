@@ -9,6 +9,6 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
   function("processSingleImage", &processSingleImage);
   function("processFrame", &processFrame);
   function("isPatternPresent", &isPatternPresent);
-  function("patternPose", &patternPose);
+  //function("patternPose", &patternPose);
 
 }
