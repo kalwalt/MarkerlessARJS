@@ -48,9 +48,10 @@ include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv-em/modules/c
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modules/xfeatures2d/include)
 
 add_definitions("-std=c++11")
-set(OPENCV_EM "../../emscripten/depends/build_opencv-em")
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/../emscripten/src ${CMAKE_CURRENT_BINARY_DIR}/${OPENCV_EM}/lib ${CMAKE_CURRENT_BINARY_DIR}/${OPENCV_EM}/3rdparty/lib)
-link_libraries(libopencv_highgui libopencv_imgcodecs libopencv_calib3d libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_video libopencv_videoio libpng libjpeg libjasper libwebp libprotobuf IlmImf zlib)
+set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
+#message("path is: ${OPENCV_EM}")
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/../emscripten/src ${OPENCV_EM}/lib ${CMAKE_CURRENT_BINARY_DIR}/${OPENCV_EM}/3rdparty/lib)
+link_libraries(libopencv_imgcodecs libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_video libopencv_videoio libopencv_calib3d libpng libjpeg libjasper libwebp libprotobuf IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
 #set(EXPORT_FUNCTIONS "'_test'")
