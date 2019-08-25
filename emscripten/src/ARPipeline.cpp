@@ -10,7 +10,6 @@
 */
 
 // File includes:
-#include <windows.h>
 #include "ARPipeline.hpp"
 
 ARPipeline::ARPipeline(const cv::Mat& patternImage, const CameraCalibration& calibration)

@@ -1,7 +1,6 @@
 #include "MarkerlessARJS.h"
 #include "emscripten.h"
 #include <opencv2/opencv.hpp>
-#include <windows.h>
 #define NOMINMAX
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #define max(a,b)            (((a) > (b)) ? (a) : (b))

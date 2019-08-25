@@ -10,7 +10,6 @@
 */
 
 // File includes:
-#include <windows.h>
 #include "Pattern.hpp"
 
 void PatternTrackingInfo::computePose(const Pattern& pattern, const CameraCalibration& calibration)
@@ -23,14 +22,14 @@ void PatternTrackingInfo::computePose(const Pattern& pattern, const CameraCalibr
   raux.convertTo(Rvec,CV_32F);
   taux.convertTo(Tvec ,CV_32F);
 
-  cv::Mat_<float> rotMat(3,3); 
+  cv::Mat_<float> rotMat(3,3);
   cv::Rodrigues(Rvec, rotMat);
 
   // Copy to transformation matrix
   for (int col=0; col<3; col++)
   {
     for (int row=0; row<3; row++)
-    {        
+    {
      pose3d.r().mat[row][col] = rotMat(row,col); // Copy rotation component
     }
     pose3d.t().data[col] = Tvec(col); // Copy translation component

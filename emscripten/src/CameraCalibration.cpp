@@ -10,7 +10,6 @@
 */
 
 // File includes:
-#include <windows.h>
 #include "CameraCalibration.hpp"
 
 CameraCalibration::CameraCalibration()

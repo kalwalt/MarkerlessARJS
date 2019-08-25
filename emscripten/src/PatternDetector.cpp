@@ -10,7 +10,6 @@
 */
 
 // File includes:
-#include <windows.h>
 #include "PatternDetector.hpp"
 #include "DebugHelpers.hpp"
 
@@ -21,9 +20,9 @@
 #include <iomanip>
 #include <cassert>
 
-PatternDetector::PatternDetector(cv::Ptr<cv::FeatureDetector> detector, 
-    cv::Ptr<cv::DescriptorExtractor> extractor, 
-    cv::Ptr<cv::DescriptorMatcher> matcher, 
+PatternDetector::PatternDetector(cv::Ptr<cv::FeatureDetector> detector,
+    cv::Ptr<cv::DescriptorExtractor> extractor,
+    cv::Ptr<cv::DescriptorMatcher> matcher,
     bool ratioTest)
     : m_detector(detector)
     , m_extractor(extractor)
@@ -43,10 +42,10 @@ void PatternDetector::train(const Pattern& pattern)
     // First we clear old train data:
     m_matcher->clear();
 
-    // Then we add vector of descriptors (each descriptors matrix describe one image). 
+    // Then we add vector of descriptors (each descriptors matrix describe one image).
     // This allows us to perform search across multiple images:
     std::vector<cv::Mat> descriptors(1);
-    descriptors[0] = pattern.descriptors.clone(); 
+    descriptors[0] = pattern.descriptors.clone();
     m_matcher->add(descriptors);
 
     // After adding train data perform actual train:
@@ -62,7 +61,7 @@ void PatternDetector::buildPatternFromImage(const cv::Mat& image, Pattern& patte
     pattern.size = cv::Size(image.cols, image.rows);
     pattern.frame = image.clone();
     getGray(image, pattern.grayImg);
-    
+
     // Build 2d and 3d contours (3d contour lie in XY plane since it's planar)
     pattern.points2d.resize(4);
     pattern.points3d.resize(4);
@@ -93,13 +92,13 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 {
     // Convert input image to gray
     getGray(image, m_grayImg);
-    
+
     // Extract feature points from input gray image
     extractFeatures(m_grayImg, m_queryKeypoints, m_queryDescriptors);
-    
+
     // Get matches with current pattern
     getMatches(m_queryDescriptors, m_matches);
-	
+
 #if _DEBUG
     cv::showAndSave("Raw matches", getMatchesImage(image, m_pattern.frame, m_queryKeypoints, m_pattern.keypoints, m_matches, 100));
 #endif
@@ -110,10 +109,10 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 
     // Find homography transformation and detect good matches
     bool homographyFound = refineMatchesWithHomography(
-        m_queryKeypoints, 
-        m_pattern.keypoints, 
-        homographyReprojectionThreshold, 
-        m_matches, 
+        m_queryKeypoints,
+        m_pattern.keypoints,
+        homographyReprojectionThreshold,
+        m_matches,
         m_roughHomography);
 
     if (homographyFound)
@@ -141,10 +140,10 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 
             // Estimate new refinement homography
             homographyFound = refineMatchesWithHomography(
-                warpedKeypoints, 
-                m_pattern.keypoints, 
-                homographyReprojectionThreshold, 
-                refinedMatches, 
+                warpedKeypoints,
+                m_pattern.keypoints,
+                homographyReprojectionThreshold,
+                refinedMatches,
                 m_refinedHomography);
 #if _DEBUG
             cv::showAndSave("MatchesWithRefinedPose", getMatchesImage(m_warpedImg, m_pattern.grayImg, warpedKeypoints, m_pattern.keypoints, refinedMatches, 100));
@@ -170,7 +169,7 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 
             // Transform contour with rough homography
             cv::perspectiveTransform(m_pattern.points2d, info.points2d, m_roughHomography);
-#if _DEBUG   
+#if _DEBUG
             info.draw2dContour(tmp, CV_RGB(0,200,0));
 #endif
         }
@@ -219,9 +218,9 @@ void PatternDetector::getMatches(const cv::Mat& queryDescriptors, std::vector<cv
 
     if (enableRatioTest)
     {
-        // To avoid NaN's when best match has zero distance we will use inversed ratio. 
+        // To avoid NaN's when best match has zero distance we will use inversed ratio.
         const float minRatio = 1.f / 1.5f;
-        
+
         // KNN match will return 2 nearest matches for each query descriptor
         m_matcher->knnMatch(queryDescriptors, m_knnMatches, 2);
 
@@ -231,8 +230,8 @@ void PatternDetector::getMatches(const cv::Mat& queryDescriptors, std::vector<cv
             const cv::DMatch& betterMatch = m_knnMatches[i][1];
 
             float distanceRatio = bestMatch.distance / betterMatch.distance;
-            
-            // Pass only matches where distance ratio between 
+
+            // Pass only matches where distance ratio between
             // nearest matches is greater than 1.5 (distinct criteria)
             if (distanceRatio < minRatio)
             {
@@ -250,7 +249,7 @@ void PatternDetector::getMatches(const cv::Mat& queryDescriptors, std::vector<cv
 bool PatternDetector::refineMatchesWithHomography
     (
     const std::vector<cv::KeyPoint>& queryKeypoints,
-    const std::vector<cv::KeyPoint>& trainKeypoints, 
+    const std::vector<cv::KeyPoint>& trainKeypoints,
     float reprojectionThreshold,
     std::vector<cv::DMatch>& matches,
     cv::Mat& homography
@@ -273,10 +272,10 @@ bool PatternDetector::refineMatchesWithHomography
 
     // Find homography matrix and get inliers mask
     std::vector<unsigned char> inliersMask(srcPoints.size());
-    homography = cv::findHomography(srcPoints, 
-                                    dstPoints, 
-                                    CV_FM_RANSAC, 
-                                    reprojectionThreshold, 
+    homography = cv::findHomography(srcPoints,
+                                    dstPoints,
+                                    CV_FM_RANSAC,
+                                    reprojectionThreshold,
                                     inliersMask);
 
     std::vector<cv::DMatch> inliers;
