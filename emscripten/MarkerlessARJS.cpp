@@ -21,7 +21,7 @@ void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, c
     cv::Size frameSize(currentFrame.cols, currentFrame.rows);
 
     ARPipeline pipeline(patternImage, calibration);
-    ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
+    //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
 
     bool shouldQuit = false;
     do
@@ -33,7 +33,7 @@ void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, c
             continue;
         }
 
-        shouldQuit = processFrame(currentFrame, pipeline, drawingCtx);
+        shouldQuit = processFrame(currentFrame, pipeline);
     } while (!shouldQuit);
 }
 
@@ -41,12 +41,12 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
 {
     cv::Size frameSize(image.cols, image.rows);
     ARPipeline pipeline(patternImage, calibration);
-    ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
+    //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
 
     bool shouldQuit = false;
     do
     {
-        shouldQuit = processFrame(image, pipeline, drawingCtx);
+        shouldQuit = processFrame(image, pipeline);
     } while (!shouldQuit);
 }
 
