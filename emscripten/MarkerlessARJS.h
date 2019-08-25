@@ -2,6 +2,7 @@
 #include "CameraCalibration.hpp"
 #include "Pattern.hpp"
 #include "PatternDetector.hpp"
+#include <opencv2/videoio.hpp>
 
 /**
  * Processes a recorded video or live view from web-camera and allows you to adjust homography refinement and
@@ -21,4 +22,8 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
  * In addition, this function draw overlay with debug information on top of the AR window.
  * Returns true if processing loop should be stopped; otherwise - false.
  */
-bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline, ARDrawingContext& drawingCtx);
+bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline);
+
+bool isPatternPresent(ARPipeline& pipeline);
+
+bool patternPose(ARPipeline& pipeline);

@@ -7,6 +7,8 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
 
   function("processVideo", &processVideo);
   function("processSingleImage", &processSingleImage);
-  function("processFrame", processFrame);
+  function("processFrame", &processFrame);
+  function("isPatternPresent", &isPatternPresent);
+  function("patternPose", &patternPose);
 
 }

@@ -51,7 +51,7 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
     } while (!shouldQuit);
 }
 
-bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline, ARDrawingContext& drawingCtx)
+bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline)
 {
     // Clone image used for background (we will draw overlay on it)
     cv::Mat img = cameraFrame.clone();
@@ -63,18 +63,6 @@ bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline, ARDrawingCon
         cv::putText(img, "Pose refinement: Off  ('h' to switch on)",  cv::Point(10,15), CV_FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
 
     cv::putText(img, "RANSAC threshold: " + ToString(pipeline.m_patternDetector.homographyReprojectionThreshold) + "( Use'-'/'+' to adjust)", cv::Point(10, 30), CV_FONT_HERSHEY_PLAIN, 1, CV_RGB(0,200,0));
-
-    // Set a new camera frame:
-    drawingCtx.updateBackground(img);
-
-    // Find a pattern and update it's detection status:
-    drawingCtx.isPatternPresent = pipeline.processFrame(cameraFrame);
-
-    // Update a pattern pose:
-    drawingCtx.patternPose = pipeline.getPatternLocation();
-
-    // Request redraw of the window:
-    drawingCtx.updateWindow();
 
     // Read the keyboard input:
     int keyCode = cv::waitKey(5);
@@ -100,4 +88,15 @@ bool processFrame(const cv::Mat& cameraFrame, ARPipeline& pipeline, ARDrawingCon
     }
 
     return shouldQuit;
+}
+
+bool isPatternPresent(const cv::Mat& cameraFrame, ARPipeline& pipeline) {
+  // Find a pattern and update it's detection status:
+  return pipeline.processFrame(cameraFrame);
+
+}
+
+bool patternPose(ARPipeline& pipeline) {
+  // Update a pattern pose:
+  return pipeline.getPatternLocation();
 }
