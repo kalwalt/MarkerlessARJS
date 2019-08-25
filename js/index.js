@@ -51,8 +51,14 @@ if (patternImage.empty())
         //shouldQuit = processFrame(currentFrame, pipeline, drawingCtx);
     } while (!shouldQuit);
   };
+  let kp = new cv.KeyPointVector();
+  let orb = new cv.ORB();
+  //orb.detect(imgMat, kp);
+  console.log(orb);
 };
 
 utils.loadOpenCv(() => {
 init();
+
+
 });
