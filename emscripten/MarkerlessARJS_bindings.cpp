@@ -5,10 +5,9 @@ using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(constant_bindings) {
 
-  function("processVideo", &processVideo);
-  function("processSingleImage", &processSingleImage);
-  function("processFrame", &processFrame);
-  function("isPatternPresent", &isPatternPresent);
+  //function("getEnableHomographyRefinement", &getEnableHomographyRefinement);
+  //function("processFrame", &processFrame);
+  //function("isPatternPresent", &isPatternPresent);
   //function("patternPose", &patternPose);
 
 }

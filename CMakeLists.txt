@@ -50,11 +50,11 @@ include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modu
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 #message("path is: ${OPENCV_EM}")
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/../emscripten/src ${OPENCV_EM}/lib ${CMAKE_CURRENT_BINARY_DIR}/${OPENCV_EM}/3rdparty/lib)
-link_libraries(libopencv_imgcodecs libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_video libopencv_videoio libopencv_calib3d libpng libjpeg libjasper libwebp libprotobuf IlmImf zlib)
+link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/emscripten ${OPENCV_EM}/lib ${CMAKE_CURRENT_BINARY_DIR}/${OPENCV_EM}/3rdparty/lib  /home/walter/kalwalt-github/MarkerlessARJS/emscripten/depends/build_opencv-em/3rdparty/lib)
+link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libprotobuf libpng libjpeg  libwebp IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
-#set(EXPORT_FUNCTIONS "'_test'")
+#set(EXPORT_FUNCTIONS "'_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold'")
 #set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
 set(MODULE_OPTIONS "-s MODULARIZE_INSTANCE=1 -s EXPORT_NAME='MarkerlessARJS' -s EXPORT_ES6=1" )
 

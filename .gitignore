@@ -1,5 +1,6 @@
 emscripten/depends/opencv-em/
 emscripten/depends/opencv_contrib/
 emscripten/depends/build_opencv-em/
+emscripten/depends/build_opencv-em-4.1/
 build-em
 libjpeg

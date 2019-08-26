@@ -29,9 +29,10 @@ public:
      */
     PatternDetector
         (
+        cv::Ptr<cv::FeatureDetector>     detector,
         //detector = cv::ORB::create();
         //cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB(1000),
-        cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB();,
+        //cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB();,
         //cv::Ptr<cv::DescriptorExtractor> extractor = new cv::xfeatures2d::FREAK(false, false),
         cv::Ptr<cv::DescriptorExtractor> extractor = new cv::xfeatures2d::FREAK(),
         cv::Ptr<cv::DescriptorMatcher>   matcher   = new cv::BFMatcher(cv::NORM_HAMMING, true),
