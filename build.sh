@@ -32,4 +32,4 @@ if [ "${DEBUG+Debug}${DEBUG-Release}" = "Debug" ]; then
 else
     emmake make VERBOSE=1
 fi
-cd $OURDIR; make install
+cd $OURDIR; cp build-em/MarkerlessARJS.js build/lib/MarkerlessARJS.js; cp build-em/MarkerlessARJS.wasm build/lib/MarkerlessARJS.wasm
