@@ -2,6 +2,7 @@
 #include "CameraCalibration.hpp"
 #include "Pattern.hpp"
 #include "PatternDetector.hpp"
+#include "GeometryTypes.hpp"
 #include <opencv2/videoio.hpp>
 
 /**
@@ -20,6 +21,9 @@ void processSingleImage(const cv::Mat& patternImage, const cv::Mat& image);
 //bool getEnableHomographyRefinement(int id);
 
 void setHomographyReprojectionThreshold(float value);
+
+void buildProjectionMatrix(const CameraCalibration& calibration, int screen_width, int screen_height, Matrix44& projectionMatrix);
+
 /*
 bool isPatternPresent(ARPipeline& pipeline);
 

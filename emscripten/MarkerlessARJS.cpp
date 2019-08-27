@@ -47,7 +47,7 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
     {
         shouldQuit = processFrame(id, image);
     } while (!shouldQuit);*/
-}
+};
 
 /*bool getEnableHomographyRefinement(){
   return mkarc->pipeline->m_patternDetector.enableHomographyRefinement;
@@ -57,6 +57,37 @@ void setHomographyReprojectionThreshold(ARPipeline &pipeline, float value) {
   pipeline.m_patternDetector.homographyReprojectionThreshold = value;
 };
 
+void buildProjectionMatrix(const CameraCalibration& calibration, int screen_width, int screen_height, Matrix44& projectionMatrix)
+{
+  float nearPlane = 0.01f;  // Near clipping distance
+  float farPlane  = 100.0f;  // Far clipping distance
+
+  // Camera parameters
+  float f_x = calibration.fx(); // Focal length in x axis
+  float f_y = calibration.fy(); // Focal length in y axis (usually the same?)
+  float c_x = calibration.cx(); // Camera primary point x
+  float c_y = calibration.cy(); // Camera primary point y
+
+  projectionMatrix.data[0] = -2.0f * f_x / screen_width;
+  projectionMatrix.data[1] = 0.0f;
+  projectionMatrix.data[2] = 0.0f;
+  projectionMatrix.data[3] = 0.0f;
+
+  projectionMatrix.data[4] = 0.0f;
+  projectionMatrix.data[5] = 2.0f * f_y / screen_height;
+  projectionMatrix.data[6] = 0.0f;
+  projectionMatrix.data[7] = 0.0f;
+
+  projectionMatrix.data[8] = 2.0f * c_x / screen_width - 1.0f;
+  projectionMatrix.data[9] = 2.0f * c_y / screen_height - 1.0f;
+  projectionMatrix.data[10] = -( farPlane + nearPlane) / ( farPlane - nearPlane );
+  projectionMatrix.data[11] = -1.0f;
+
+  projectionMatrix.data[12] = 0.0f;
+  projectionMatrix.data[13] = 0.0f;
+  projectionMatrix.data[14] = -2.0f * farPlane * nearPlane / ( farPlane - nearPlane );
+  projectionMatrix.data[15] = 0.0f;
+}
 
 /*
 bool isPatternPresent(const cv::Mat& cameraFrame, ARPipeline& pipeline) {

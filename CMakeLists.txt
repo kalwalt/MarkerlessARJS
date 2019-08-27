@@ -54,7 +54,7 @@ link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/emsc
 link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libprotobuf libpng libjpeg  libwebp IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
-#set(EXPORT_FUNCTIONS "'_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold'")
+#set(EXPORT_FUNCTIONS "'_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
 #set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
 set(MODULE_OPTIONS "-s MODULARIZE_INSTANCE=1 -s EXPORT_NAME='MarkerlessARJS' -s EXPORT_ES6=1" )
 
