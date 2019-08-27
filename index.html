@@ -15,11 +15,23 @@ window.MarkerlessARJS_wasm_url = '../build/lib/MarkerlessARJS.wasm';
     <img src="data/pinball.jpg" id="pinball">
 <!--<script src="js/CameraCalibration.js" type="text/javascript"></script>-->
 <script src="js/utils.js" type="text/javascript"></script>
-<script src="js/index.js" type="text/javascript"></script>
+<!--<script src="js/index.js" type="text/javascript"></script>-->
 <script type="module" src="./build/lib/MarkerlessARJS.js"></script>
 <script type="module">
   import MarkerlessARJS from "./build/lib/MarkerlessARJS.js"
-  
+  let utils = new Utils('errorMessage');
+  let video = document.getElementById('videoInput');
+  let cameraCalibration;
+  //cv['onRuntimeInitialized']=()=>{
+  cameraCalibration = new CameraCalibration('526.58037684199849f', '524.65577209994706f', '318.41744018680112f', '202.96659047014398f');
+  //};
+  let patternImage = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+  MarkerlessARJS.processVideo(patternImage, cameraCalibration);
+  utils.loadOpenCv(() => {
+  init();
+
+
+  });
 </script>  
   </body>
 </html>
