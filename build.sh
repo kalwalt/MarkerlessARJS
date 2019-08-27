@@ -24,7 +24,8 @@ if [ ! -d "build-em" ] ; then
 fi
 cd build-em
 rm -f CMakeCache.txt
-rm -rf ./MarkerlessAR.js
+rm -rf ./MarkerlessARJS.js
+rm -rf ./MarkerlessARJS.wasm
 emconfigure cmake .. -DCMAKE_BUILD_TYPE=${DEBUG+Debug}${DEBUG-Release} -DCMAKE_CXX_FLAGS="$EM_FLAGS $EM_MRKARJS_FLAGS" -DCMAKE_C_FLAGS="$EM_FLAGS $EM_MRKARJS_FLAGS" -DCMAKE_C_FLAGS_RELEASE="-DNDEBUG -O3" -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O3" -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O3"
 
 if [ "${DEBUG+Debug}${DEBUG-Release}" = "Debug" ]; then
