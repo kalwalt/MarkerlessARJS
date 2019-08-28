@@ -11,7 +11,7 @@
 
 extern "C" {
 
-void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose)
+EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose)
 {
 
     // Grab first frame to get the frame dimensions
@@ -50,7 +50,7 @@ void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, c
     } while (!shouldQuit);
 }
 
-void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibration, const cv::Mat& image)
+EMSCRIPTEN_KEEPALIVE void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibration, const cv::Mat& image)
 {
     cv::Size frameSize(image.cols, image.rows);
     ARPipeline pipeline(patternImage, calibration);
@@ -67,11 +67,11 @@ void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibrat
   return mkarc->pipeline->m_patternDetector.enableHomographyRefinement;
 }*/
 
-void setHomographyReprojectionThreshold(ARPipeline &pipeline, float value) {
+EMSCRIPTEN_KEEPALIVE void setHomographyReprojectionThreshold(ARPipeline &pipeline, float value) {
   pipeline.m_patternDetector.homographyReprojectionThreshold = value;
 };
 
-void buildProjectionMatrix(const CameraCalibration& calibration, int screen_width, int screen_height, Matrix44& projectionMatrix)
+EMSCRIPTEN_KEEPALIVE void buildProjectionMatrix(const CameraCalibration& calibration, int screen_width, int screen_height, Matrix44& projectionMatrix)
 {
   float nearPlane = 0.01f;  // Near clipping distance
   float farPlane  = 100.0f;  // Far clipping distance
