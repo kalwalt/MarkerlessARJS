@@ -1,21 +1,15 @@
-#include "MarkerlessARJS.h"
+//#include "MarkerlessARJS.h"
 #include "emscripten.h"
+#include "ARPipeline.hpp"
+#include "CameraCalibration.hpp"
+#include "Pattern.hpp"
+#include "PatternDetector.hpp"
+#include "GeometryTypes.hpp"
+#include <opencv2/videoio.hpp>
 #include <opencv2/opencv.hpp>
 #include <string>
 
-EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
-  CameraCalibration calibration(a, b, c, d);
-   //std::string filename;
-  // Try to read the pattern:
-  cv::Mat patternImage = cv::imread("img.jpg");
-  if (patternImage.empty())
-  {
-      std::cout << "Input image cannot be read" << std::endl;
-      return;
-  }
-  cv::VideoCapture cap = cv::VideoCapture(0);
-  processVideo(patternImage, calibration, cap, patternPose);
-}
+extern "C" {
 
 void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose)
 {
@@ -121,3 +115,17 @@ bool patternPose(ARPipeline& pipeline) {
   return pipeline.getPatternLocation();
 }
 */
+EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
+  CameraCalibration calibration(a, b, c, d);
+   //std::string filename;
+  // Try to read the pattern:
+  cv::Mat patternImage = cv::imread("img.jpg");
+  if (patternImage.empty())
+  {
+      std::cout << "Input image cannot be read" << std::endl;
+      return;
+  }
+  cv::VideoCapture cap = cv::VideoCapture(0);
+  processVideo(patternImage, calibration, cap, patternPose);
+}
+}
