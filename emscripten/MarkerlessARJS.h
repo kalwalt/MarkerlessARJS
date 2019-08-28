@@ -5,11 +5,13 @@
 #include "GeometryTypes.hpp"
 #include <opencv2/videoio.hpp>
 
+void fromVideo(float a, float b, float c, float d, Transformation& patternPose);
+
 /**
  * Processes a recorded video or live view from web-camera and allows you to adjust homography refinement and
  * reprojection threshold in runtime.
  */
-void processVideo(const cv::Mat& patternImage, cv::VideoCapture& capture);
+void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose);
 
 /**
  * Processes single image. The processing goes in a loop.

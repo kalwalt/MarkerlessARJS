@@ -3,7 +3,21 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
-void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture)
+void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
+  CameraCalibration calibration(a, b, c, d);
+   std::string filename;
+  // Try to read the pattern:
+  cv::Mat patternImage = cv::imread(filename);
+  if (patternImage.empty())
+  {
+      std::cout << "Input image cannot be read" << std::endl;
+      return;
+  }
+  cv::VideoCapture cap = cv::VideoCapture(0);
+  processVideo(patternImage, calibration, cap, patternPose);
+}
+
+void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose)
 {
 
     // Grab first frame to get the frame dimensions
@@ -32,7 +46,13 @@ void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, c
             continue;
         }
 
+        // Find a pattern and update it's detection status:
         //shouldQuit = processFrame(id, currentFrame);
+        shouldQuit = pipeline.processFrame(currentFrame);
+        if (shouldQuit) {
+          // Update a pattern pose:
+          patternPose = pipeline.getPatternLocation();
+        }
     } while (!shouldQuit);
 }
 
