@@ -39,17 +39,16 @@ endif()
 
 
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/src)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends)
+#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv-em/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv-em/build_opencv_em_ui)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv-em/modules/core/include)
+#include_directories(${PROJECT_SOURCE_DIR}/emscripten)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/modules/core/include)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modules/xfeatures2d/include)
 
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
-#message("path is: ${OPENCV_EM}")
+
 link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
 link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libprotobuf libpng libjpeg libwebp IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
