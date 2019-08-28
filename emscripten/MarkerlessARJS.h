@@ -5,6 +5,7 @@
 #include "GeometryTypes.hpp"
 #include <opencv2/videoio.hpp>
 
+extern "C" {
 void fromVideo(float a, float b, float c, float d, Transformation& patternPose);
 
 /**
@@ -31,3 +32,4 @@ bool isPatternPresent(ARPipeline& pipeline);
 
 bool patternPose(ARPipeline& pipeline);
 */
+}

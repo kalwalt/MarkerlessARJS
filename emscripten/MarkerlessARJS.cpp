@@ -3,11 +3,11 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
-void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
+EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
   CameraCalibration calibration(a, b, c, d);
-   std::string filename;
+   //std::string filename;
   // Try to read the pattern:
-  cv::Mat patternImage = cv::imread(filename);
+  cv::Mat patternImage = cv::imread("img.jpg");
   if (patternImage.empty())
   {
       std::cout << "Input image cannot be read" << std::endl;
