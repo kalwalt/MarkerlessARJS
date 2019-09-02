@@ -1,5 +1,5 @@
 //#include "MarkerlessARJS.h"
-#include "emscripten.h"
+#include <emscripten.h>
 #include "ARPipeline.hpp"
 #include "CameraCalibration.hpp"
 #include "Pattern.hpp"
@@ -9,11 +9,18 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
+struct sharedRes {
+  CameraCalibration calibration;
+  ARPipeline pipeline;
+};
+
 extern "C" {
 
-EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, CameraCalibration& calibration, cv::VideoCapture& capture, Transformation& patternPose)
+EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, cv::VideoCapture& capture, Transformation& patternPose)
 {
 
+    sharedRes* sr;
+    //sr->calibration.;
     // Grab first frame to get the frame dimensions
     cv::Mat currentFrame;
     capture >> currentFrame;
@@ -27,7 +34,7 @@ EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, CameraCalibr
 
     cv::Size frameSize(currentFrame.cols, currentFrame.rows);
 
-    ARPipeline pipeline(patternImage, calibration);
+    //sr->pipeline(patternImage, sr->calibration);
     //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
 
     bool shouldQuit = false;
@@ -42,18 +49,19 @@ EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, CameraCalibr
 
         // Find a pattern and update it's detection status:
         //shouldQuit = processFrame(id, currentFrame);
-        shouldQuit = pipeline.processFrame(currentFrame);
+        shouldQuit = sr->pipeline.processFrame(currentFrame);
         if (shouldQuit) {
           // Update a pattern pose:
-          patternPose = pipeline.getPatternLocation();
+          patternPose = sr->pipeline.getPatternLocation();
         }
     } while (!shouldQuit);
 }
 
-EMSCRIPTEN_KEEPALIVE void processSingleImage(const cv::Mat& patternImage, CameraCalibration& calibration, const cv::Mat& image)
+EMSCRIPTEN_KEEPALIVE void processSingleImage(const cv::Mat& patternImage, const cv::Mat& image)
 {
+    sharedRes* sr;
     cv::Size frameSize(image.cols, image.rows);
-    ARPipeline pipeline(patternImage, calibration);
+    //sr->pipeline(patternImage, sr->calibration);
     //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
 
     /*bool shouldQuit = false;
@@ -67,20 +75,22 @@ EMSCRIPTEN_KEEPALIVE void processSingleImage(const cv::Mat& patternImage, Camera
   return mkarc->pipeline->m_patternDetector.enableHomographyRefinement;
 }*/
 
-EMSCRIPTEN_KEEPALIVE void setHomographyReprojectionThreshold(ARPipeline &pipeline, float value) {
-  pipeline.m_patternDetector.homographyReprojectionThreshold = value;
+EMSCRIPTEN_KEEPALIVE void setHomographyReprojectionThreshold(float value) {
+  sharedRes* sr;
+  sr->pipeline.m_patternDetector.homographyReprojectionThreshold = value;
 };
 
-EMSCRIPTEN_KEEPALIVE void buildProjectionMatrix(const CameraCalibration& calibration, int screen_width, int screen_height, Matrix44& projectionMatrix)
+EMSCRIPTEN_KEEPALIVE void buildProjectionMatrix(int screen_width, int screen_height, Matrix44& projectionMatrix)
 {
+  sharedRes* sr;
   float nearPlane = 0.01f;  // Near clipping distance
   float farPlane  = 100.0f;  // Far clipping distance
 
   // Camera parameters
-  float f_x = calibration.fx(); // Focal length in x axis
-  float f_y = calibration.fy(); // Focal length in y axis (usually the same?)
-  float c_x = calibration.cx(); // Camera primary point x
-  float c_y = calibration.cy(); // Camera primary point y
+  float f_x = sr->calibration.fx(); // Focal length in x axis
+  float f_y = sr->calibration.fy(); // Focal length in y axis (usually the same?)
+  float c_x = sr->calibration.cx(); // Camera primary point x
+  float c_y = sr->calibration.cy(); // Camera primary point y
 
   projectionMatrix.data[0] = -2.0f * f_x / screen_width;
   projectionMatrix.data[1] = 0.0f;
@@ -116,7 +126,7 @@ bool patternPose(ARPipeline& pipeline) {
 }
 */
 EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
-  CameraCalibration calibration(a, b, c, d);
+  //CameraCalibration calibration(a, b, c, d);
    //std::string filename;
   // Try to read the pattern:
   cv::Mat patternImage = cv::imread("img.jpg");
@@ -126,6 +136,6 @@ EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transfor
       return;
   }
   cv::VideoCapture cap = cv::VideoCapture(0);
-  processVideo(patternImage, calibration, cap, patternPose);
+  processVideo(patternImage, cap, patternPose);
 }
 }
