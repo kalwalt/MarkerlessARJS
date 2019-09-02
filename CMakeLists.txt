@@ -38,10 +38,11 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/src)
+#include_directories(${PROJECT_SOURCE_DIR}/emscripten/src)
 #include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/include)
 #include_directories(${PROJECT_SOURCE_DIR}/emscripten)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/modules/core/include)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modules/xfeatures2d/include)
