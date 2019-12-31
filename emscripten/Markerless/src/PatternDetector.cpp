@@ -20,6 +20,7 @@
 #include <iomanip>
 #include <cassert>
 
+PatternDetector::PatternDetector(){}
 PatternDetector::PatternDetector(cv::Ptr<cv::FeatureDetector> detector,
     cv::Ptr<cv::DescriptorExtractor> extractor,
     cv::Ptr<cv::DescriptorMatcher> matcher,

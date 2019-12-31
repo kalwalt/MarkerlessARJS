@@ -27,6 +27,7 @@ public:
     /**
      * Initialize a pattern detector with specified feature detector, descriptor extraction and matching algorithm
      */
+    PatternDetector();
     PatternDetector
         (
         cv::Ptr<cv::FeatureDetector>     detector,
