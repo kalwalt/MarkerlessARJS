@@ -38,11 +38,3 @@ void PatternTrackingInfo::computePose(const Pattern& pattern, const CameraCalibr
   // Since solvePnP finds camera location, w.r.t to marker pose, to get marker pose w.r.t to the camera we invert it.
   pose3d = pose3d.getInverted();
 }
-
-void PatternTrackingInfo::draw2dContour(cv::Mat& image, cv::Scalar color) const
-{
-  for (size_t i = 0; i < points2d.size(); i++)
-  {
-    cv::line(image, points2d[i], points2d[ (i+1) % points2d.size() ], color, 2, CV_AA);
-  }
-}

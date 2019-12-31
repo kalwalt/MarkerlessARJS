@@ -43,8 +43,6 @@ struct PatternTrackingInfo
   std::vector<cv::Point2f>  points2d;
   Transformation            pose3d;
 
-  void draw2dContour(cv::Mat& image, cv::Scalar color) const;
-
   /**
    * Compute pattern pose using PnP algorithm
    */

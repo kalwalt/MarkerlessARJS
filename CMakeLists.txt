@@ -37,8 +37,40 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/../SDK" CACHE PATH "default install path" FORCE )
 endif()
 
+add_subdirectory(emscripten/Markerless)
+set(MRK_LIBRARY_STYLE "STATIC")
+set(PUBLIC_HEADERS
+    emscripten/Markerless/include/ARPipeline.hpp
+    emscripten/Markerless/include/CameraCalibration.hpp
+    emscripten/Markerless/include/DebugHelpers.hpp
+    emscripten/Markerless/include/GeometryTypes.hpp
+    emscripten/Markerless/include/Pattern.hpp
+    emscripten/Markerless/include/PatternDetector.hpp
+)
 
-#include_directories(${PROJECT_SOURCE_DIR}/emscripten/src)
+set(SOURCE
+    emscripten/Markerless/src/ARPipeline.cpp
+    emscripten/Markerless/src/CameraCalibration.cpp
+    emscripten/Markerless/src/GeometryTypes.cpp
+    emscripten/Markerless/src/Pattern.cpp
+    emscripten/Markerless/src/PatternDetector.cpp
+)
+add_library(MRK ${MRK_LIBRARY_STYLE}
+    ${PUBLIC_HEADERS} ${SOURCE}
+)
+target_include_directories(MARKERLESS
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/emscripten/Markerless/include
+    PRIVATE emscripten/Markerless/include
+    #PRIVATE ${JPEG_INCLUDE_DIR}
+    PRIVATE ${OpenCV_INCLUDE_DIR}
+)
+
+target_link_libraries(MARKERLESS
+    INTERFACE ${LIBS}
+  #  PRIVATE ${JPEG_LIBRARIES}
+)
+
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/Markerless/include)
 #include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/include)
 #include_directories(${PROJECT_SOURCE_DIR}/emscripten)
@@ -50,8 +82,8 @@ include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modu
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 
-link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
-link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libprotobuf libpng libjpeg libwebp IlmImf zlib)
+link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/build-em ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
+link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libMRK libprotobuf libpng libjpeg libwebp IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
 set(EXPORT_FUNCTIONS "'_fromVideo', '_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
@@ -59,7 +91,7 @@ set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
 set(MODULE_OPTIONS "-s MODULARIZE_INSTANCE=1 -s EXPORT_NAME='MarkerlessARJS' -s EXPORT_ES6=1" )
 
 set(MEM 16777216) #This is default value
-message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+#message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
