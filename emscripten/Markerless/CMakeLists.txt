@@ -42,4 +42,5 @@ else()
 	endforeach()
 	target_link_libraries(MARKERLESS
 	    PUBLIC ${LINK_LIST}
-	)
+)
+  endif()
