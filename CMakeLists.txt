@@ -24,9 +24,9 @@ project(MarkerlessARJS
         LANGUAGES CXX C
 )
 
-set(JPEG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/includes)
+#set(JPEG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/includes)
 
-set(JPEG_LIBRARIES ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/)
+#set(JPEG_LIBRARIES ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/)
 message("JPEG_INCLUDE_DIR ${JPEG_LIBRARIES}")
 set(HAVE_INTEL_SIMD 0)
 
@@ -76,8 +76,14 @@ include_directories(${PROJECT_SOURCE_DIR}/emscripten/include)
 #include_directories(${PROJECT_SOURCE_DIR}/emscripten)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include/opencv2)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/modules/core/include)
+#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include/opencv2)
+#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/modules/core/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/calib3d/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/core/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/features2d/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/flann/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/highgui/include)
+include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/imgcodecs/include)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/video/include)
 include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/videoio/include)
 
@@ -86,17 +92,17 @@ include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modu
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 
-link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/build-em ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
+link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/build-em ${OPENCV_EM} ${OPENCV_EM}opencv2 ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
 link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libMRK libprotobuf libpng libjpeg libwebp IlmImf zlib)
 add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
 set(EXPORT_FUNCTIONS "'_fromVideo', '_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
 set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
-set(MODULE_OPTIONS "-s MODULARIZE_INSTANCE=1 -s EXPORT_NAME='MarkerlessARJS' -s EXPORT_ES6=1" )
+#set(MODULE_OPTIONS "-s MODULARIZE_INSTANCE=1 -s EXPORT_NAME='MarkerlessARJS' -s EXPORT_ES6=1" )
+set(MODULE_OPTIONS " -s EXPORT_NAME='MarkerlessARJS' " )
 
 set(MEM 16777216) #This is default value
-#message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1")
+set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # https://github.com/kripken/emscripten/blob/master/src/settings.js#L85
