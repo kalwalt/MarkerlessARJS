@@ -9,11 +9,8 @@
     <p class="err centered" id="errorMessage"></p>
     <video id="videoInput" src="data/output_4.ogg" autoplay></video>
     <canvas id="canvas"></canvas>
-    <script type='text/javascript'>
-       window.MarkerlessARJS_wasm_url = '../build/lib/MarkerlessARJS.wasm';
-    </script>
     <script src="js/utils.js" type="text/javascript"></script>
-    <script async src="build/lib/MarkerlessARJS.js"></script>
+    <script src="build/lib/MarkerlessARJS.js"></script>
     <script >
       let utils = new Utils('errorMessage');
       let video = document.getElementById('videoInput');
