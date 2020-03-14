@@ -12,14 +12,20 @@ window.MarkerlessARJS_wasm_url = '../build/lib/MarkerlessARJS.wasm';
     </script>
     <p class="err centered" id="errorMessage"></p>
     <video id="videoInput" src="data/output_4.ogg" autoplay></video>
-    <img src="data/pinball.jpg" id="pinball">
+    <canvas id="canvas"></canvas>
 <script src="js/utils.js" type="text/javascript"></script>
 <script  src="build/lib/MarkerlessARJS.js"></script>
 <script >
   let utils = new Utils('errorMessage');
   let video = document.getElementById('videoInput');
   let cameraCalibration;
-  MarkerlessARJS.processVideo(patternImage, cameraCalibration);
+  var img = new Image();
+  img.src = "data/pinball.jpg";
+  var canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+  var imageData = ctx.getImageData(0, 0, img.width, img.height);
+  Module.processVideo(imageData.data, cameraCalibration);
   utils.loadOpenCv(() => {
   init();
   });
