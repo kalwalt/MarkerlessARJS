@@ -1,5 +1,5 @@
 #include <emscripten/bind.h>
-#include "MarkerlessARJS.h"
+//#include "MarkerlessARJS.h"
 
 using namespace emscripten;
 

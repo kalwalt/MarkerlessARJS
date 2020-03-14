@@ -22,7 +22,7 @@ const wasm = downloadWasm(window.MarkerlessARJS_wasm_url);
     // The instantiation can be performed either synchronously or asynchronously. The return value of this function
     // should contain the exports object of the instantiated Module, or an empty dictionary object {} if the
     // instantiation is performed asynchronously, or false if instantiation failed.
-    MarkerlessARJS.instantiateWasm = function(imports, successCallback) {
+    Module.instantiateWasm = function(imports, successCallback) {
         wasm.then(function(wasmBinary) {
             var wasmInstantiate = WebAssembly.instantiate(new Uint8Array(wasmBinary), imports).then(function(output) {
             successCallback(output.instance);
