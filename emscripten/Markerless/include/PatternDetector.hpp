@@ -17,7 +17,6 @@
 #include "Pattern.hpp"
 
 #include <opencv2/opencv.hpp>
-//#include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/xfeatures2d.hpp>
 
@@ -27,16 +26,15 @@ public:
     /**
      * Initialize a pattern detector with specified feature detector, descriptor extraction and matching algorithm
      */
-    PatternDetector();
     PatternDetector
         (
-        cv::Ptr<cv::FeatureDetector>     detector,
-        //detector = cv::ORB::create();
+        cv::Ptr<cv::FeatureDetector>     detector = cv::ORB::create(1000),
+
         //cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB(1000),
         //cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB();,
         //cv::Ptr<cv::DescriptorExtractor> extractor = new cv::xfeatures2d::FREAK(false, false),
-        cv::Ptr<cv::DescriptorExtractor> extractor = new cv::xfeatures2d::FREAK(),
-        cv::Ptr<cv::DescriptorMatcher>   matcher   = new cv::BFMatcher(cv::NORM_HAMMING, true),
+        cv::Ptr<cv::DescriptorExtractor> extractor = cv::xfeatures2d::FREAK::create(false, false),
+        cv::Ptr<cv::DescriptorMatcher>   matcher   = cv::BFMatcher::create(cv::NORM_HAMMING, true),
         bool enableRatioTest                       = false
         );
 
