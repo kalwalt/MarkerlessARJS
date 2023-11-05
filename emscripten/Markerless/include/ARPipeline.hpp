@@ -20,6 +20,7 @@
 class ARPipeline
 {
 public:
+  ARPipeline();
   ARPipeline(const cv::Mat& patternImage, const CameraCalibration& calibration);
 
   bool processFrame(const cv::Mat& inputFrame);

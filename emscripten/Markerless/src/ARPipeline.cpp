@@ -12,6 +12,10 @@
 // File includes:
 #include "ARPipeline.hpp"
 
+ARPipeline::ARPipeline()
+{
+}
+
 ARPipeline::ARPipeline(const cv::Mat& patternImage, const CameraCalibration& calibration)
   : m_calibration(calibration)
 {

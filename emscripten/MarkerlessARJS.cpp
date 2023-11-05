@@ -1,141 +1,19 @@
-//#include "MarkerlessARJS.h"
-#include <emscripten.h>
-#include "ARPipeline.hpp"
-#include "CameraCalibration.hpp"
-#include "Pattern.hpp"
-#include "PatternDetector.hpp"
-#include "GeometryTypes.hpp"
-#include <opencv2/videoio.hpp>
-#include <opencv2/opencv.hpp>
-#include <string>
+#include "MarkerlessARJS.h"
 
-struct sharedRes {
-  CameraCalibration calibration;
-  ARPipeline pipeline;
+MarkerlessARJS::MarkerlessARJS(){};
+
+void MarkerlessARJS::setupCamera(float _fx, float _fy, float _cx, float _cy) {
+  CameraCalibration calibration(_fx, _fy, _cx, _cy);
+  m_calibration = calibration;
 };
 
-extern "C" {
-
-EMSCRIPTEN_KEEPALIVE void processVideo(const cv::Mat& patternImage, cv::VideoCapture& capture, Transformation& patternPose)
-{
-
-    sharedRes* sr;
-    //sr->calibration.;
-    // Grab first frame to get the frame dimensions
-    cv::Mat currentFrame;
-    capture >> currentFrame;
-
-    // Check the capture succeeded:
-    if (currentFrame.empty())
-    {
-        std::cout << "Cannot open video capture device" << std::endl;
-        return;
-    }
-
-    cv::Size frameSize(currentFrame.cols, currentFrame.rows);
-
-    //sr->pipeline(patternImage, sr->calibration);
-    //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
-
-    bool shouldQuit = false;
-    do
-    {
-        capture >> currentFrame;
-        if (currentFrame.empty())
-        {
-            shouldQuit = true;
-            continue;
-        }
-
-        // Find a pattern and update it's detection status:
-        //shouldQuit = processFrame(id, currentFrame);
-        shouldQuit = sr->pipeline.processFrame(currentFrame);
-        if (shouldQuit) {
-          // Update a pattern pose:
-          patternPose = sr->pipeline.getPatternLocation();
-        }
-    } while (!shouldQuit);
-}
-
-EMSCRIPTEN_KEEPALIVE void processSingleImage(const cv::Mat& patternImage, const cv::Mat& image)
-{
-    sharedRes* sr;
-    cv::Size frameSize(image.cols, image.rows);
-    //sr->pipeline(patternImage, sr->calibration);
-    //ARDrawingContext drawingCtx("Markerless AR", frameSize, calibration);
-
-    /*bool shouldQuit = false;
-    do
-    {
-        shouldQuit = processFrame(id, image);
-    } while (!shouldQuit);*/
+void processPatternImage(unsigned char *patternImage) {
+  ARPipeline pipeline(patternImage, m_calibration);
+  m_pipeline = pipeline;
 };
 
-/*bool getEnableHomographyRefinement(){
-  return mkarc->pipeline->m_patternDetector.enableHomographyRefinement;
-}*/
-
-EMSCRIPTEN_KEEPALIVE void setHomographyReprojectionThreshold(float value) {
-  sharedRes* sr;
-  sr->pipeline.m_patternDetector.homographyReprojectionThreshold = value;
+void MarkerlessARJS::processVideoFrame(unsigned char *frameImage) {
+  ARPipeline pipeline(frameImage, m_calibration);
 };
 
-EMSCRIPTEN_KEEPALIVE void buildProjectionMatrix(int screen_width, int screen_height, Matrix44& projectionMatrix)
-{
-  sharedRes* sr;
-  float nearPlane = 0.01f;  // Near clipping distance
-  float farPlane  = 100.0f;  // Far clipping distance
-
-  // Camera parameters
-  float f_x = sr->calibration.fx(); // Focal length in x axis
-  float f_y = sr->calibration.fy(); // Focal length in y axis (usually the same?)
-  float c_x = sr->calibration.cx(); // Camera primary point x
-  float c_y = sr->calibration.cy(); // Camera primary point y
-
-  projectionMatrix.data[0] = -2.0f * f_x / screen_width;
-  projectionMatrix.data[1] = 0.0f;
-  projectionMatrix.data[2] = 0.0f;
-  projectionMatrix.data[3] = 0.0f;
-
-  projectionMatrix.data[4] = 0.0f;
-  projectionMatrix.data[5] = 2.0f * f_y / screen_height;
-  projectionMatrix.data[6] = 0.0f;
-  projectionMatrix.data[7] = 0.0f;
-
-  projectionMatrix.data[8] = 2.0f * c_x / screen_width - 1.0f;
-  projectionMatrix.data[9] = 2.0f * c_y / screen_height - 1.0f;
-  projectionMatrix.data[10] = -( farPlane + nearPlane) / ( farPlane - nearPlane );
-  projectionMatrix.data[11] = -1.0f;
-
-  projectionMatrix.data[12] = 0.0f;
-  projectionMatrix.data[13] = 0.0f;
-  projectionMatrix.data[14] = -2.0f * farPlane * nearPlane / ( farPlane - nearPlane );
-  projectionMatrix.data[15] = 0.0f;
-}
-
-/*
-bool isPatternPresent(const cv::Mat& cameraFrame, ARPipeline& pipeline) {
-  // Find a pattern and update it's detection status:
-  return pipeline.processFrame(cameraFrame);
-
-}
-
-bool patternPose(ARPipeline& pipeline) {
-  // Update a pattern pose:
-  return pipeline.getPatternLocation();
-}
-*/
-EMSCRIPTEN_KEEPALIVE void fromVideo(float a, float b, float c, float d, Transformation& patternPose){
-  //CameraCalibration calibration(a, b, c, d);
-   //std::string filename;
-  // Try to read the pattern:
-  cv::Mat patternImage = cv::imread("img.jpg");
-  if (patternImage.empty())
-  {
-      std::cout << "Input image cannot be read" << std::endl;
-      return;
-  }
-  cv::VideoCapture cap = cv::VideoCapture(0);
-  processVideo(patternImage, cap, patternPose);
-}
-}
+#include "MarkerlessARJS_bindings.cpp"
