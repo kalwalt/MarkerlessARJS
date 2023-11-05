@@ -2,104 +2,104 @@
 # MarkerlessARJS CMake configuration file.
 #
 # To invoke CMake on this file, from the chosen build directory, invoke:
-#     cmake <path to directory containing this file>
+# cmake <path to directory containing this file>
 #
 # Copyright 2019, @kalwalt.
 # Author(s): Walter Perdan <info@kalwaltart.it>
 #
 
-cmake_minimum_required( VERSION 3.4 )
-
-# Any directives that must go before the project command.
-
-#if(DEFINED CMAKE_BUILD_TYPE)
-#  set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${CMAKE_CONFIGURATION_TYPES} )
-#endif()
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+cmake_minimum_required(VERSION 3.15)
 
 # Define project.
 project(MarkerlessARJS
-        VERSION ${ARX_VERSION_STRING}
-        LANGUAGES CXX C
+    VERSION ${ARX_VERSION_STRING}
+    LANGUAGES CXX C
 )
 
-#set(JPEG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/includes)
+include(FetchContent)
 
-#set(JPEG_LIBRARIES ${PROJECT_SOURCE_DIR}/depends/emscripten/libjpeg/)
-message("JPEG_INCLUDE_DIR ${JPEG_LIBRARIES}")
-set(HAVE_INTEL_SIMD 0)
+if(${EMSCRIPTEN_COMP} EQUAL 1)
+    message("Fetching opencv for emscripten compilation from webarkit/opencv-em ...")
+    FetchContent_Declare(
+        build_opencv
+        URL https://github.com/webarkit/opencv-em/releases/download/0.1.3/opencv-js-4.7.0-emcc-3.1.26.zip
+    )
+else()
+    message("Fetching opencv from webarkit/opencv-em ...")
+    FetchContent_Declare(
+        build_opencv
+        URL https://github.com/webarkit/opencv-em/releases/download/0.1.3/opencv-4.7.0.zip
+    )
+endif()
 
-# Installation settings.
-# If the user didn't define CMAKE_INSTALL_PREFIX, set a local install destination.
-# When building packages, this will typically be overridden with DESTDIR (e.g. "make install DESTDIR=/tmp").
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/../SDK" CACHE PATH "default install path" FORCE )
+FetchContent_MakeAvailable(build_opencv)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/build" CACHE PATH "default install path" FORCE)
 endif()
 
 add_subdirectory(emscripten/Markerless)
-set(MRK_LIBRARY_STYLE "STATIC")
-set(PUBLIC_HEADERS
-    emscripten/Markerless/include/ARPipeline.hpp
-    emscripten/Markerless/include/CameraCalibration.hpp
-    emscripten/Markerless/include/DebugHelpers.hpp
-    emscripten/Markerless/include/GeometryTypes.hpp
-    emscripten/Markerless/include/Pattern.hpp
-    emscripten/Markerless/include/PatternDetector.hpp
-)
-
-set(SOURCE
-    emscripten/Markerless/src/ARPipeline.cpp
-    emscripten/Markerless/src/CameraCalibration.cpp
-    emscripten/Markerless/src/GeometryTypes.cpp
-    emscripten/Markerless/src/Pattern.cpp
-    emscripten/Markerless/src/PatternDetector.cpp
-)
-add_library(MRK ${MRK_LIBRARY_STYLE}
-    ${PUBLIC_HEADERS} ${SOURCE}
-)
-target_include_directories(MARKERLESS
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/emscripten/Markerless/include
-    PRIVATE emscripten/Markerless/include
-    #PRIVATE ${JPEG_INCLUDE_DIR}
-    PRIVATE ${OpenCV_INCLUDE_DIR}
-)
-
-target_link_libraries(MARKERLESS
-    INTERFACE ${LIBS}
-  #  PRIVATE ${JPEG_LIBRARIES}
-)
-
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/Markerless/include)
-#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/include)
-#include_directories(${PROJECT_SOURCE_DIR}/emscripten)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include)
-#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/include/opencv2)
-#include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv_em/modules/core/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/calib3d/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/core/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/features2d/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/flann/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/highgui/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/imgcodecs/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/video/include)
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em/mod-includes/modules/videoio/include)
-
-include_directories(${PROJECT_SOURCE_DIR}/emscripten/depends/opencv_contrib/modules/xfeatures2d/include)
 
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 
-link_directories(${PROJECT_SOURCE_DIR}/emscripten/src ${PROJECT_SOURCE_DIR}/build-em ${OPENCV_EM} ${OPENCV_EM}opencv2 ${OPENCV_EM}/lib ${OPENCV_EM}/3rdparty/lib)
-link_libraries(libopencv_videoio libopencv_video libopencv_features2d libopencv_flann libopencv_imgproc libopencv_core libopencv_imgcodecs libopencv_calib3d libopencv_highgui libMRK libprotobuf libpng libjpeg libwebp IlmImf zlib)
-add_executable(MarkerlessARJS ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
+add_executable(MarkerlessARJS   ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
 
-set(EXPORT_FUNCTIONS "'_fromVideo', '_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
-set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
+get_filename_component(DIR ./ ABSOLUTE)
 
-set(MEM 16777216) #This is default value
+set(MarkerlessARJS
+emscripten/MarkerlessARJS.h
+emscripten/Markerless/ARPipeline.hpp
+emscripten/Markerless/CameraCalibration.hpp
+emscripten/Markerless/GeometryTypes.hpp
+emscripten/Markerless/Pattern.hpp
+emscripten/Markerless/PatternDetector.hpp
+)
+
+set(MarkerlessARJS
+emscripten/MarkerlessARJS.cpp
+emscripten/Markerless/ARPipeline.cpp
+emscripten/Markerless/CameraCalibration.cpp
+emscripten/Markerless/GeometryTypes.cpp
+emscripten/Markerless/Pattern.cpp
+emscripten/Markerless/PatternDetector.cpp
+)
+
+target_include_directories(
+    MarkerlessARJS
+    PRIVATE
+    "${PROJECT_SOURCE_DIR}/emscripten/Markerless/include"
+    "${build_opencv_SOURCE_DIR}"
+    "${build_opencv_SOURCE_DIR}/3rdparty/include/libjpeg"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/calib3d/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/core/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/features2d/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/flann/include"
+    #"${build_opencv_SOURCE_DIR}/libs/opencv/modules/imgcodecs/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/imgproc/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv/modules/video/include"
+    "${build_opencv_SOURCE_DIR}/libs/opencv_contrib/modules/xfeatures2d/include"
+)
+
+target_link_libraries(
+    MarkerlessARJS
+    MARKERLESS
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_calib3d.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_features2d.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_flann.a"
+    #"${build_opencv_SOURCE_DIR}/lib/libopencv_imgcodecs.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_video.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_xfeatures2d.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_imgproc.a"
+    "${build_opencv_SOURCE_DIR}/lib/libopencv_core.a"
+    "${build_opencv_SOURCE_DIR}/3rdparty/lib/liblibopenjp2.a"
+    "${build_opencv_SOURCE_DIR}/3rdparty/lib/libzlib.a"
+)
+
+# set(EXPORT_FUNCTIONS "'_fromVideo', '_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
+# set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
+set(MEM 16777216) # This is default value
 set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -109,11 +109,12 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # set(NO_WASM "-s WASM=0")
     set(WASM_LOADER "--pre-js ${PROJECT_SOURCE_DIR}/emscripten/Wasm_Loader.js")
 else()
-     set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0 --llvm-lto 1 -s ASSERTIONS=0 -s PRECISE_F32=2")
-     set(NO_WASM "-s WASM=0")
+    set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0 --llvm-lto 1 -s ASSERTIONS=0 -s PRECISE_F32=2")
+    set(NO_WASM "-s WASM=0")
+
     # If WASM add a pre-js to register the wasm loader
     # set(WASM_LOADER "--pre-js ${PROJECT_SOURCE_DIR}/emscripten/Wasm_Loader.js")
 endif()
 
 # set(OPTIMIZE_OPTIONS "-s NO_EXIT_RUNTIME=1 -s INVOKE_RUN=0")
-set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${MEMORY} ${OPTIMIZE_EMCC} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
+set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${MEMORY} ${OPTIMIZE_EMCC} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
