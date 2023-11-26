@@ -75,7 +75,7 @@ target_link_libraries(
   "${build_opencv_SOURCE_DIR}/lib/libopencv_xfeatures2d.a"
   "${build_opencv_SOURCE_DIR}/lib/libopencv_imgproc.a"
   "${build_opencv_SOURCE_DIR}/lib/libopencv_core.a"
-  "${build_opencv_SOURCE_DIR}/3rdparty/lib/liblibopenjp2.a"
+  #"${build_opencv_SOURCE_DIR}/3rdparty/lib/liblibopenjp2.a"
   "${build_opencv_SOURCE_DIR}/3rdparty/lib/libzlib.a"
 )
 

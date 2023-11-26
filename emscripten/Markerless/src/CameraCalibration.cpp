@@ -14,6 +14,18 @@
 
 CameraCalibration::CameraCalibration()
 {
+     m_intrinsic = cv::Matx33f::zeros();
+
+    fx() = 0;
+    fy() = 0;
+    cx() = 0;
+    cy() = 0;
+
+    m_distortion.create(5,1);
+    for (int i=0; i<5; i++)
+        m_distortion(i) = 0;
+    
+    std::cout << "Init CameraCalibration with default values" << std::endl;
 }
 
 CameraCalibration::CameraCalibration(float _fx, float _fy, float _cx, float _cy)
