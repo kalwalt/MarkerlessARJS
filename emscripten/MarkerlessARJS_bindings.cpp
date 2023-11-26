@@ -7,5 +7,7 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
 
   class_<MarkerlessARJS>("MarkerlessARJS")
   .constructor()
-  .function("setupCamera", &MarkerlessARJS::setupCamera);
+  .function("setupCamera", &MarkerlessARJS::setupCamera)
+  .function("processPatternImage", &MarkerlessARJS::processPatternImage)
+  .function("processVideoFrame", &MarkerlessARJS::processVideoFrame);
 }
