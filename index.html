@@ -23,7 +23,11 @@
       setTimeout(() => {
         ctx.drawImage(img, 0, 0, img.width, img.height);
         var imageData = ctx.getImageData(0, 0, img.width, img.height);
-        Module._processVideo(imageData.data, cameraCalibration);
+
+        var markerless = new Module.MarkerlessARJS()
+        console.log(markerless);
+        markerless.setupCamera(320, 640, 23, 34);
+        markerless.processPatternImage(imageData.data, img.width, img.height);
       }, 500);
 
     </script>

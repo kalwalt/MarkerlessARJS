@@ -5,6 +5,7 @@
 #include <PatternDetector.hpp>
 
 #include <emscripten.h>
+#include <emscripten/val.h>
 #include <opencv2/core.hpp>
 //#include <opencv2/videoio.hpp>
 #include <string>
@@ -13,8 +14,8 @@ class MarkerlessARJS {
 public:
   MarkerlessARJS();
   void setupCamera(float _fx, float _fy, float _cx, float _cy);
-  void processPatternImage(unsigned char *patternImage);
-  void processVideoFrame(unsigned char *frameImage);
+  void processPatternImage(emscripten::val patternImage, size_t width, size_t height);
+  void processVideoFrame(emscripten::val frameImage, size_t width, size_t height);
 
 private:
   ARPipeline m_pipeline;

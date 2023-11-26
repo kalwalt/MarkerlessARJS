@@ -93,7 +93,7 @@ target_link_libraries(
     "${build_opencv_SOURCE_DIR}/lib/libopencv_xfeatures2d.a"
     "${build_opencv_SOURCE_DIR}/lib/libopencv_imgproc.a"
     "${build_opencv_SOURCE_DIR}/lib/libopencv_core.a"
-    "${build_opencv_SOURCE_DIR}/3rdparty/lib/liblibopenjp2.a"
+    #"${build_opencv_SOURCE_DIR}/3rdparty/lib/liblibopenjp2.a"
     "${build_opencv_SOURCE_DIR}/3rdparty/lib/libzlib.a"
 )
 
@@ -109,7 +109,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # set(NO_WASM "-s WASM=0")
     set(WASM_LOADER "--pre-js ${PROJECT_SOURCE_DIR}/emscripten/Wasm_Loader.js")
 else()
-    set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0 --llvm-lto 1 -s ASSERTIONS=0 -s PRECISE_F32=2")
+    set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0  -s ASSERTIONS=0 -s PRECISE_F32=2")
     set(NO_WASM "-s WASM=0")
 
     # If WASM add a pre-js to register the wasm loader
