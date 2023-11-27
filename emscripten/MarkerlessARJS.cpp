@@ -27,4 +27,10 @@ void MarkerlessARJS::processVideoFrame(emscripten::val frameImage, size_t width,
 
 };
 
+emscripten::val MarkerlessARJS::getPatternPose() {
+  Transformation patternPose = m_pipeline.getPatternLocation();
+  Matrix44 glMatrix = patternPose.getMat44(); 
+  return emscripten::val(emscripten::typed_memory_view(16, reinterpret_cast<const float*>(&glMatrix.data[0])));
+};
+
 #include "MarkerlessARJS_bindings.cpp"
