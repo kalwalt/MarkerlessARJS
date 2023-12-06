@@ -9,6 +9,11 @@ void MarkerlessARJS::setupCamera(float _fx, float _fy, float _cx, float _cy) {
   m_calibration.cy() = _cy;
 };
 
+bool MarkerlessARJS::initGL(int width, int height) {
+  cv::Size frameSize(width, height);
+  ARDrawingContext context("context", frameSize, m_calibration);
+};
+
 void MarkerlessARJS::processPatternImage(emscripten::val patternImage, size_t width, size_t height) {
   auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(patternImage);
   cv::Mat grayImage(height, width, CV_8UC1);

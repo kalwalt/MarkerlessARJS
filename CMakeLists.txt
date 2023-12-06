@@ -43,12 +43,14 @@ add_subdirectory(emscripten/Markerless)
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 
-add_executable(MarkerlessARJS   ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
+#add_executable(MarkerlessARJS   ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS.cpp)
+add_executable(MarkerlessARJS   ${PROJECT_SOURCE_DIR}/emscripten/main.cpp)
 
 get_filename_component(DIR ./ ABSOLUTE)
 
 set(MarkerlessARJS
-emscripten/MarkerlessARJS.h
+#emscripten/MarkerlessARJS.h
+        emscripten/Markerless/include/ARDrawingContext.hpp
 emscripten/Markerless/ARPipeline.hpp
 emscripten/Markerless/CameraCalibration.hpp
 emscripten/Markerless/GeometryTypes.hpp
@@ -57,8 +59,9 @@ emscripten/Markerless/PatternDetector.hpp
 )
 
 set(MarkerlessARJS
-emscripten/MarkerlessARJS.cpp
+#emscripten/MarkerlessARJS.cpp
 emscripten/Markerless/ARPipeline.cpp
+        emscripten/Markerless/src/ARDrawingContext.cpp
 emscripten/Markerless/CameraCalibration.cpp
 emscripten/Markerless/GeometryTypes.cpp
 emscripten/Markerless/Pattern.cpp
@@ -98,23 +101,25 @@ target_link_libraries(
 )
 
 # set(EXPORT_FUNCTIONS "'_fromVideo', '_processVideo', '_processSingleImage', '_setHomographyReprojectionThreshold', '_buildProjectionMatrix'")
+set(EXPORT_FUNCTIONS "_main")
 # set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
 set(MEM 16777216) # This is default value
-set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0")
+set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 ")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # https://github.com/kripken/emscripten/blob/master/src/settings.js#L85
     # set(TOTAL_STACK "-s TOTAL_STACK=5*1024*1024)"
     # set(DEBUG_EMCC "-g4 -s SAFE_HEAP=1 -s ASSERTIONS=1 --js-opts 0 -s DEMANGLE_SUPPORT=0" )
     # set(NO_WASM "-s WASM=0")
-    set(WASM_LOADER "--pre-js ${PROJECT_SOURCE_DIR}/emscripten/Wasm_Loader.js")
 else()
     set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0  -s ASSERTIONS=0 -s PRECISE_F32=2")
-    set(NO_WASM "-s WASM=0")
+    set(NO_WASM " -s WASM=1 " )
+    #set(ES6_FLAGS  " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
+    set(SINGLE_FILE " -s SINGLE_FILE=1 ")
+    set(USE_GLFW " -sUSE_GLFW=3 -sFULL_ES3=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 ")
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
-    # If WASM add a pre-js to register the wasm loader
-    # set(WASM_LOADER "--pre-js ${PROJECT_SOURCE_DIR}/emscripten/Wasm_Loader.js")
 endif()
 
 # set(OPTIMIZE_OPTIONS "-s NO_EXIT_RUNTIME=1 -s INVOKE_RUN=0")
-set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${MEMORY} ${OPTIMIZE_EMCC} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
+set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
