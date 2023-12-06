@@ -8,29 +8,36 @@
   <body>
     <p class="err centered" id="errorMessage"></p>
     <video id="videoInput" src="data/output_4.ogg" autoplay></video>
-    <canvas id="canvas"></canvas>
+    <!--<canvas id="canvas"></canvas>-->
     <script src="js/utils.js" type="text/javascript"></script>
-    <script src="build/lib/MarkerlessARJS.js"></script>
-    <script >
+    <!--<script src="build/lib/MarkerlessARJS.js"></script>-->
+    <script type="module">
+      import Module from './build/lib/MarkerlessARJS.js';
       let utils = new Utils('errorMessage');
       let video = document.getElementById('videoInput');
       let cameraCalibration;
       var img = new Image();
       img.src = "data/pinball.jpg";
-      var canvas = document.getElementById('canvas');
-      ctx = canvas.getContext('2d');
+      //var canvas = document.getElementById('canvas');
+      //ctx = canvas.getContext('2d');
+      console.log(Module)
+      var Markerless = await new  Module()
+      console.log(Markerless);
 
       setTimeout(() => {
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-        var imageData = ctx.getImageData(0, 0, img.width, img.height);
+        //ctx.drawImage(img, 0, 0, img.width, img.height);
+        //var imageData = ctx.getImageData(0, 0, img.width, img.height);
+        console.log(Module)
 
-        var markerless = new Module.MarkerlessARJS()
+        var markerless = new Markerless.MarkerlessARJS()
         console.log(markerless);
         markerless.setupCamera(320, 640, 23, 34);
+        markerless.initGL(320, 640)
         markerless.processPatternImage(imageData.data, img.width, img.height);
         console.log(markerless.getPatternPose());
       }, 500);
 
     </script>
+  <canvas id="canvas"></canvas>
   </body>
 </html>
