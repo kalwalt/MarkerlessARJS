@@ -1,3 +1,4 @@
+#include <ARDrawingContext.hpp>
 #include <ARPipeline.hpp>
 #include <CameraCalibration.hpp>
 #include <GeometryTypes.hpp>
@@ -14,6 +15,7 @@ class MarkerlessARJS {
 public:
   MarkerlessARJS();
   void setupCamera(float _fx, float _fy, float _cx, float _cy);
+  bool initGL(int width, int height);
   void processPatternImage(emscripten::val patternImage, size_t width, size_t height);
   void processVideoFrame(emscripten::val frameImage, size_t width, size_t height);
   emscripten::val getPatternPose();
