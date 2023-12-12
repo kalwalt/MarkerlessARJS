@@ -30,6 +30,7 @@ set(PUBLIC_HEADERS
         include/GeometryTypes.hpp
         include/Pattern.hpp
         include/PatternDetector.hpp
+        stb_image/stb_image.h
 )
 
 set(SOURCE
@@ -89,6 +90,9 @@ target_include_directories(MARKERLESS
 target_link_libraries(MARKERLESS
         INTERFACE ${LIBS}
 )
+
+set_target_properties(MARKERLESS PROPERTIES LINK_FLAGS
+        " -sUSE_GLFW3=1 -sUSE_WEBGL2=1 -sLEGACY_GL_EMULATION=1 ")
 
 if (NOT ARX_TARGET_PLATFORM_WINDOWS)
     target_link_libraries(MARKERLESS
