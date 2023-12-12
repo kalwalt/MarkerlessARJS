@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.15)
 
 # Define project.
 project(MarkerlessARJS
-    VERSION ${ARX_VERSION_STRING}
+    VERSION 1.0.0
     LANGUAGES CXX C
 )
 
@@ -48,7 +48,7 @@ add_executable(MarkerlessARJS   ${PROJECT_SOURCE_DIR}/emscripten/main.cpp)
 
 get_filename_component(DIR ./ ABSOLUTE)
 
-set(MarkerlessARJS
+#[[set(MarkerlessARJS
 #emscripten/MarkerlessARJS.h
         emscripten/Markerless/include/ARDrawingContext.hpp
 emscripten/Markerless/ARPipeline.hpp
@@ -67,11 +67,13 @@ emscripten/Markerless/GeometryTypes.cpp
 emscripten/Markerless/Pattern.cpp
 emscripten/Markerless/PatternDetector.cpp
 )
+]]#
 
 target_include_directories(
     MarkerlessARJS
     PRIVATE
     "${PROJECT_SOURCE_DIR}/emscripten/Markerless/include"
+        "${PROJECT_SOURCE_DIR}/emscripten/Markerless/stb_image"
     "${build_opencv_SOURCE_DIR}"
     "${build_opencv_SOURCE_DIR}/3rdparty/include/libjpeg"
     "${build_opencv_SOURCE_DIR}/libs/opencv/include"
@@ -112,14 +114,16 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # set(DEBUG_EMCC "-g4 -s SAFE_HEAP=1 -s ASSERTIONS=1 --js-opts 0 -s DEMANGLE_SUPPORT=0" )
     # set(NO_WASM "-s WASM=0")
 else()
-    set(OPTIMIZE_EMCC "--memory-init-file 0 -s INVOKE_RUN=0  -s ASSERTIONS=0 -s PRECISE_F32=2")
+    set(OPTIMIZE_EMCC "--memory-init-file 0  -s ASSERTIONS=0 -s PRECISE_F32=2")
     set(NO_WASM " -s WASM=1 " )
     #set(ES6_FLAGS  " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
     set(SINGLE_FILE " -s SINGLE_FILE=1 ")
-    set(USE_GLFW " -sUSE_GLFW=3 -sFULL_ES3=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 ")
+    set(USE_GLFW " -sUSE_GLFW=3 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sLEGACY_GL_EMULATION=1 ")
+    # data/pinball.jpg should be inside build_em folder...
+    set(EMBED_FILE " --embed-file data/pinball.jpg")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 endif()
 
 # set(OPTIMIZE_OPTIONS "-s NO_EXIT_RUNTIME=1 -s INVOKE_RUN=0")
-set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
+set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")

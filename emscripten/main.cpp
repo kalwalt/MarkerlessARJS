@@ -16,8 +16,19 @@
 //#include <opencv2/videoio.hpp>
 #include <string>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 std::function<void()> loop;
 void main_loop() { loop(); }
+
+//! Load an image from file
+uint8_t* loadImage(std::string filename, int width, int height) {
+int comp;
+
+const uint8_t* img = stbi_load( filename.c_str(), &width, &height, &comp, 3);
+return (uint8_t*)img;
+}
 
 int main(void) {
   // Change this calibration to yours:
@@ -26,14 +37,19 @@ int main(void) {
   int height = 480;
   cv::Size frameSize(width, height);
   ARDrawingContext context("context", frameSize, calibration);
-  printf("context created\n");
-  emscripten::val patternImage;
+  printf("ARDrawingContext created\n");
+  //emscripten::val patternImage;
 
-  auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(patternImage);
+  auto u8 = loadImage("data/pinball.jpg", 640, 480);
+
+  //auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(patternImage);
+  printf("patternImage converted\n");
   cv::Mat grayImage(height, width, CV_8UC1);
-  cv::Mat patternImageMat = cv::Mat(height, width, CV_8UC4, u8.data());
+  cv::Mat patternImageMat = cv::Mat(height, width, CV_8UC4, u8);
   cv::cvtColor(patternImageMat, grayImage, cv::COLOR_RGBA2GRAY);
   ARPipeline pipeline(grayImage, calibration);
+
+  printf("pipeline ok\n");
 
   loop = [&] { context.updateWindow(); };
 
