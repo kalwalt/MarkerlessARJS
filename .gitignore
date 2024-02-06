@@ -6,3 +6,4 @@ emscripten/depends/build_opencv-em-4.1/
 build-em
 build_em
 libjpeg
+deps

@@ -40,6 +40,8 @@ endif()
 
 add_subdirectory(emscripten/Markerless)
 
+add_subdirectory(deps/igl)
+
 add_definitions("-std=c++11")
 set(OPENCV_EM "${PROJECT_SOURCE_DIR}/emscripten/depends/build_opencv-em")
 
