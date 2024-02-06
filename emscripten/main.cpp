@@ -3,7 +3,7 @@
 //
 
 
-#include <ARDrawingContext.hpp>
+#include "ARDrawingContextIGL.hpp"
 #include <ARPipeline.hpp>
 #include <CameraCalibration.hpp>
 #include <GeometryTypes.hpp>
@@ -36,7 +36,7 @@ int main(void) {
   int width = 640;
   int height = 480;
   cv::Size frameSize(width, height);
-  ARDrawingContext context("context", frameSize, calibration);
+  ARDrawingContextIGL context("context", frameSize, calibration);
   printf("ARDrawingContext created\n");
   //emscripten::val patternImage;
 
@@ -51,7 +51,7 @@ int main(void) {
 
   printf("pipeline ok\n");
 
-  loop = [&] { context.updateWindow(); };
+  loop = [&] { /*context.updateWindow(); */};
 
   emscripten_set_main_loop(main_loop, 0, true);
 }
