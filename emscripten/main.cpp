@@ -57,9 +57,53 @@ int main(int argc, char *argv[]) {
 
     printf("pipeline ok\n");
 
+    EM_ASM(
+            var video = document.getElementById("video");
+            console.warn(video);
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        var hint = {
+        };
+        hint['audio'] = false;
+        hint['video'] = true;
+        console.log(hint);
+        if( window.innerWidth < 800 ) {
+            var width = ( window.innerWidth < window.innerHeight ) ? 240 : 360;
+            var height = ( window.innerWidth < window.innerHeight ) ? 360 : 240;
+
+            var aspectRatio = window.innerWidth / window.innerHeight;
+
+            console.log( width, height );
+
+            //hint['video']['facingMode'] = 'environment';
+            hint['video'] = { facingMode: 'environment'};
+            /*hint['video'] = {
+                    width: {
+                min: width,
+                max: width
+            }
+            };*/
+
+            console.log( hint );
+        }
+
+        navigator.mediaDevices.getUserMedia( hint ).then( function( stream ) {
+            video.srcObject = stream;
+            video.addEventListener( 'loadedmetadata', function() {
+                video.play();
+
+                console.log( 'video', video, video.videoWidth, video.videoHeight );
+
+            } );
+        } );
+    }
+    );
+
     // Main loop
 
-    loop = [&] { context.emscriptenMainLoopCallback(); };
+    loop = [&] {
+        context.emscriptenMainLoopCallback();
+    };
+
     emscripten_set_main_loop(main_loop, 0, 1);
 
     context.destroyWindow();
