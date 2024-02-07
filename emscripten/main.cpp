@@ -33,6 +33,22 @@ uint8_t *loadImage(std::string filename, int width, int height) {
     return (uint8_t *) img;
 }
 
+EM_JS(emscripten::EM_VAL, get_video_stream, (), {
+var video = document.getElementById('video');
+var canvas_process = document.createElement('canvas');
+var context_process = canvas_process.getContext('2d');
+context_process.fillStyle = 'black';
+context_process.fillRect(0, 0, 640, 480);
+context_process.drawImage(video, 0, 0, 640, 480);
+var imageData = context_process.getImageData(0, 0, 640, 480);
+console.log(imageData.data);
+return Emval.toHandle(imageData.data);
+})
+
+/*void get_video_stream() {
+    //emscripten::val video = emscripten::val::global("document").call<emscripten::val>("getElementById", emscripten::val("video"));
+};*/
+
 int main(int argc, char *argv[]) {
     // Change this calibration to yours:
     CameraCalibration calibration(526.58037684199849f, 524.65577209994706f, 318.41744018680112f, 202.96659047014398f);
@@ -57,51 +73,14 @@ int main(int argc, char *argv[]) {
 
     printf("pipeline ok\n");
 
-    EM_ASM(
-            var video = document.getElementById("video");
-            console.warn(video);
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        var hint = {
-        };
-        hint['audio'] = false;
-        hint['video'] = true;
-        console.log(hint);
-        if( window.innerWidth < 800 ) {
-            var width = ( window.innerWidth < window.innerHeight ) ? 240 : 360;
-            var height = ( window.innerWidth < window.innerHeight ) ? 360 : 240;
-
-            var aspectRatio = window.innerWidth / window.innerHeight;
-
-            console.log( width, height );
-
-            //hint['video']['facingMode'] = 'environment';
-            hint['video'] = { facingMode: 'environment'};
-            /*hint['video'] = {
-                    width: {
-                min: width,
-                max: width
-            }
-            };*/
-
-            console.log( hint );
-        }
-
-        navigator.mediaDevices.getUserMedia( hint ).then( function( stream ) {
-            video.srcObject = stream;
-            video.addEventListener( 'loadedmetadata', function() {
-                video.play();
-
-                console.log( 'video', video, video.videoWidth, video.videoHeight );
-
-            } );
-        } );
-    }
-    );
-
+    context.initVideoStream();
     // Main loop
 
     loop = [&] {
         context.emscriptenMainLoopCallback();
+       // emscripten::val video = emscripten::val::global("document").call<emscripten::val>("getElementById", emscripten::val("video"));
+        emscripten:: val data_buffer = emscripten::val::take_ownership(get_video_stream());
+        auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(data_buffer);
     };
 
     emscripten_set_main_loop(main_loop, 0, 1);

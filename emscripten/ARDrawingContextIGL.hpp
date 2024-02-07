@@ -18,6 +18,8 @@
 #include <igl/opengl/webgl/Device.h>
 #include <Common.h>
 
+#include <emscripten.h>
+
 class ARDrawingContextIGL {
 public:
     ARDrawingContextIGL(std::string windowName, cv::Size frameSize, const CameraCalibration &c);
@@ -83,6 +85,53 @@ void main() {
         device_.reset(nullptr);
         glfwDestroyWindow(window_);
         glfwTerminate();
+    }
+
+    void initVideoStream() {
+        EM_ASM(
+                var
+        video = document.getElementById("video");
+        console.warn(video);
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            var hint = {
+            };
+            hint['audio'] = false;
+            hint['video'] = true;
+            console.log(hint);
+            if (window.innerWidth < 800) {
+                var width = (window.innerWidth < window.innerHeight) ? 240 : 360;
+                var height = (window.innerWidth < window.innerHeight) ? 360 : 240;
+
+                var aspectRatio = window.innerWidth / window.innerHeight;
+
+                console.log(width, height);
+
+                //hint['video']['facingMode'] = 'environment';
+                hint['video'] = {facingMode: 'environment'};
+                /*hint['video'] = {
+                        width: {
+                    min: width,
+                    max: width
+                }
+                };*/
+
+                console.log(hint);
+            }
+
+            navigator.mediaDevices.getUserMedia(hint).then(function(stream)
+            {
+                video.srcObject = stream;
+                video.addEventListener('loadedmetadata', function()
+                {
+                    video.play();
+
+                    console.log('video', video, video.videoWidth, video.videoHeight);
+
+                } );
+            } );
+        }
+        );
+
     }
 
 private:
