@@ -44,6 +44,7 @@ add_subdirectory(deps/igl)
 
 add_executable(
         MarkerlessARJS
+        ${PROJECT_SOURCE_DIR}/emscripten/ARDrawingContextIGL.cpp
         ${PROJECT_SOURCE_DIR}/emscripten/Common.cpp
         ${PROJECT_SOURCE_DIR}/emscripten/main.cpp
 )
