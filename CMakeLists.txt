@@ -44,13 +44,12 @@ add_subdirectory(deps/igl)
 
 add_executable(
         MarkerlessARJS
-        ${PROJECT_SOURCE_DIR}/emscripten/ARDrawingContextIGL.cpp
+        ${PROJECT_SOURCE_DIR}/emscripten/Common.cpp
         ${PROJECT_SOURCE_DIR}/emscripten/main.cpp
 )
 
 igl_set_cxxstd(MarkerlessARJS 17)
 igl_set_folder(MarkerlessARJS MarkerlessARJS)
-
 
 target_include_directories(
         MarkerlessARJS
@@ -73,6 +72,7 @@ target_include_directories(
 
 target_link_libraries(
         MarkerlessARJS
+        PUBLIC
         MARKERLESS
         IGLLibrary
         "${build_opencv_SOURCE_DIR}/lib/libopencv_calib3d.a"
@@ -85,20 +85,18 @@ target_link_libraries(
         "${build_opencv_SOURCE_DIR}/3rdparty/lib/libzlib.a"
 )
 
-set(EXPORT_FUNCTIONS "_main")
-set(MEM 16777216) # This is default value
-set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 ")
+set(MEMORY " -s ALLOW_MEMORY_GROWTH=1 ")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # https://github.com/kripken/emscripten/blob/master/src/settings.js#L85
     # set(TOTAL_STACK "-s TOTAL_STACK=5*1024*1024)"
     # set(DEBUG_EMCC "-g4 -s SAFE_HEAP=1 -s ASSERTIONS=1 --js-opts 0 -s DEMANGLE_SUPPORT=0" )
+    set(OPTIMIZE_EMCC " -s ASSERTIONS=2 -s DEMANGLE_SUPPORT=0 -g3 -O0 ")
     # set(NO_WASM "-s WASM=0")
 else ()
-    set(OPTIMIZE_EMCC "--memory-init-file 0  -s ASSERTIONS=0 -s PRECISE_F32=2")
+    set(OPTIMIZE_EMCC " -Oz ")
     set(NO_WASM " -s WASM=1 ")
-    #set(ES6_FLAGS  " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
-    set(SINGLE_FILE " -s SINGLE_FILE=1 ")
+    set(SINGLE_FILE " -s SINGLE_FILE=1 -s LLD_REPORT_UNDEFINED ")
     set(USE_GLFW " -s USE_WEBGL2=1 -s USE_GLFW=3 -s GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS=1 -s GL_EMULATE_GLES_VERSION_STRING_FORMAT=1 ")
     # data/pinball.jpg should be inside build_em folder...
     set(EMBED_FILE " --embed-file data/pinball.jpg")
@@ -106,5 +104,4 @@ else ()
 
 endif ()
 
-# set(OPTIMIZE_OPTIONS "-s NO_EXIT_RUNTIME=1 -s INVOKE_RUN=0")
-set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind -s EXPORTED_FUNCTIONS='[${EXPORT_FUNCTIONS}]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[${EXPORTED_RUNTIME_FUNCTIONS}]'")
+set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${NO_WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --shell-file data/igl.html ")
