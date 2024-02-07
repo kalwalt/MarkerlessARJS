@@ -37,15 +37,21 @@ static constexpr const char *codeVS = R"(#version 300 es
 precision highp float;
 
 out vec3 vColor;
-const vec2 pos[3] = vec2[3](
-	vec2(-0.6, -0.4),
-	vec2( 0.6, -0.4),
-	vec2( 0.0,  0.6)
+const vec2 pos[6] = vec2[6](
+	vec2(-1.0, -1.0),
+	vec2(1.0, -1.0),
+	vec2(-1.0, 1.0),
+    vec2(-1.0, 1.0),
+    vec2(1.0, -1.0),
+    vec2(1.0, 1.0)
 );
-const vec3 col[3] = vec3[3](
+const vec3 col[6] = vec3[6](
 	vec3(1.0, 0.0, 0.0),
 	vec3(0.0, 1.0, 0.0),
-	vec3(0.0, 0.0, 1.0)
+	vec3(0.0, 0.0, 1.0),
+    vec3(0.0, 0.0, 1.0),
+	vec3(0.0, 1.0, 0.0),
+	vec3(1.0, 0.0, 0.0)
 );
 void main() {
 	gl_Position = vec4(pos[gl_VertexID], 0.0, 1.0);
@@ -112,7 +118,7 @@ void render(const std::shared_ptr <igl::ITexture> &nativeDrawable) {
     commands->bindViewport(viewport);
     commands->bindScissorRect(scissor);
     commands->pushDebugGroupLabel("Render Triangle", igl::Color(1, 0, 0));
-    commands->draw(igl::PrimitiveType::Triangle, 0, 3);
+    commands->draw(igl::PrimitiveType::Triangle, 0, 6);
     commands->popDebugGroupLabel();
     commands->endEncoding();
 
