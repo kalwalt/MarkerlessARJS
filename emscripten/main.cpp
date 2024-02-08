@@ -33,21 +33,19 @@ uint8_t *loadImage(std::string filename, int width, int height) {
     return (uint8_t *) img;
 }
 
-EM_JS(emscripten::EM_VAL, get_video_stream, (), {
+EM_JS(int, get_video_stream, (), {
 var video = document.getElementById('video');
 var canvas_process = document.createElement('canvas');
 var context_process = canvas_process.getContext('2d');
 context_process.fillStyle = 'black';
-context_process.fillRect(0, 0, 640, 480);
-context_process.drawImage(video, 0, 0, 640, 480);
-var imageData = context_process.getImageData(0, 0, 640, 480);
+(context_process.fillRect(0, 0, 640, 480));
+(context_process.drawImage(video, 0, 0, 640, 480));
+var imageData = (context_process.getImageData(0, 0, 640, 480));
 console.log(imageData.data);
-return Emval.toHandle(imageData.data);
+var pointer = Module._malloc(640 * 480 * 4);
+(Module.HEAPU8.set(imageData.data, pointer));
+return pointer;
 })
-
-/*void get_video_stream() {
-    //emscripten::val video = emscripten::val::global("document").call<emscripten::val>("getElementById", emscripten::val("video"));
-};*/
 
 int main(int argc, char *argv[]) {
     // Change this calibration to yours:
@@ -74,13 +72,14 @@ int main(int argc, char *argv[]) {
     printf("pipeline ok\n");
 
     context.initVideoStream();
+
+    auto pointer = get_video_stream();
+    printf("pointer: %d\n", pointer);
+
     // Main loop
 
     loop = [&] {
         context.emscriptenMainLoopCallback();
-       // emscripten::val video = emscripten::val::global("document").call<emscripten::val>("getElementById", emscripten::val("video"));
-        emscripten:: val data_buffer = emscripten::val::take_ownership(get_video_stream());
-        auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(data_buffer);
     };
 
     emscripten_set_main_loop(main_loop, 0, 1);
