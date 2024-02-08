@@ -41,11 +41,22 @@ context_process.fillStyle = 'black';
 (context_process.fillRect(0, 0, 640, 480));
 (context_process.drawImage(video, 0, 0, 640, 480));
 var imageData = (context_process.getImageData(0, 0, 640, 480));
-console.log(imageData.data);
 var pointer = Module._malloc(640 * 480 * 4);
-(Module.HEAPU8.set(imageData.data, pointer));
+
+function update() {
+    (Module.HEAPU8.set(imageData.data, pointer));
+};
+
+Module.requestAnimationFrame(update);
 return pointer;
 })
+
+cv::Mat convertVideo2Gray(int pointer, size_t width, size_t height) {
+    cv::Mat grayVideo(height, width, CV_8UC1);
+    cv::Mat videoMat = cv::Mat(height, width, CV_8UC4, pointer);
+    cv::cvtColor(videoMat, grayVideo, cv::COLOR_RGBA2GRAY);
+    return videoMat;
+}
 
 int main(int argc, char *argv[]) {
     // Change this calibration to yours:
@@ -80,6 +91,20 @@ int main(int argc, char *argv[]) {
 
     loop = [&] {
         context.emscriptenMainLoopCallback();
+
+        cv::Mat cameraFrame = convertVideo2Gray(pointer, 640, 480);
+
+        // Find a pattern and update it's detection status:
+        context.isPatternPresent = pipeline.processFrame(cameraFrame);
+
+        if(context.isPatternPresent) {
+            printf("pattern detected!\n");
+        } else {
+            printf("pattern not detected...\n");
+        };
+
+        // Update a pattern pose:
+        context.patternPose = pipeline.getPatternLocation();
     };
 
     emscripten_set_main_loop(main_loop, 0, 1);
