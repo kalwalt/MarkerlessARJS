@@ -47,8 +47,19 @@ function update() {
     (Module.HEAPU8.set(imageData.data, pointer));
 };
 
-Module.requestAnimationFrame(update);
+window.requestAnimationFrame(update);
 return pointer;
+})
+
+EM_JS(emscripten::EM_VAL, get_video_stream_js, (), {
+var video = document.getElementById('video');
+var canvas_process = document.createElement('canvas');
+var context_process = canvas_process.getContext('2d');
+context_process.fillStyle = 'black';
+(context_process.fillRect(0, 0, 640, 480));
+(context_process.drawImage(video, 0, 0, 640, 480));
+var imageData = (context_process.getImageData(0, 0, 640, 480));
+return Emval.toHandle(imageData.data);
 })
 
 cv::Mat convertVideo2Gray(int pointer, size_t width, size_t height) {
@@ -57,6 +68,16 @@ cv::Mat convertVideo2Gray(int pointer, size_t width, size_t height) {
     cv::cvtColor(videoMat, grayVideo, cv::COLOR_RGBA2GRAY);
     return videoMat;
 }
+
+
+
+/*void displayGrayVideo(emscripten::EM_VAL video, size_t width, size_t height) {
+    EM_ASM({
+        var canvas = document.getElementById('canvasGray');
+        var context = canvas.getContext('2d');
+        var imageData = (new ImageData(new Uint8CampedArray($0), $1, $2));
+        (context.putImageData(imageData, 0, 0));
+}, Emval.toHandle(video), 640, 480 );}*/
 
 int main(int argc, char *argv[]) {
     // Change this calibration to yours:
@@ -92,7 +113,10 @@ int main(int argc, char *argv[]) {
     loop = [&] {
         context.emscriptenMainLoopCallback();
 
+		emscripten::val video = emscripten::val::take_ownership(get_video_stream_js());
+
         cv::Mat cameraFrame = convertVideo2Gray(pointer, 640, 480);
+        //displayGrayVideo(video, 640, 480);
 
         // Find a pattern and update it's detection status:
         context.isPatternPresent = pipeline.processFrame(cameraFrame);

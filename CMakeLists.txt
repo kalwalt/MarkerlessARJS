@@ -98,7 +98,7 @@ else ()
     set(OPTIMIZE_EMCC " -Oz ")
     set(NO_WASM " -s WASM=1 ")
     set(SINGLE_FILE " -s SINGLE_FILE=1 -s LLD_REPORT_UNDEFINED ")
-    set(USE_GLFW " -s USE_WEBGL2=1 -s USE_GLFW=3 -s GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS=1 -s GL_EMULATE_GLES_VERSION_STRING_FORMAT=1 ")
+    set(USE_GLFW " -s USE_WEBGL2=1 -s USE_GLFW=3 -s GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS=1 -s GL_EMULATE_GLES_VERSION_STRING_FORMAT=1 --bind ")
     # data/pinball.jpg should be inside build_em folder...
     set(EMBED_FILE " --embed-file data/pinball.jpg")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
