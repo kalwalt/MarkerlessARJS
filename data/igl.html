@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-us" data-theme="cupcake">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>IGL WebGL Sample</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@3.3.1/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="flex justify-center items-center h-screen">
+    <div class="flex justify-center items-center">
+      <div id="spinner-container"
+        class="flex flex-col w-[768px] h-[768px] justify-center items-center border-2 rounded-md">
+        <span class="loading loading-ring loading-lg"></span>
+        <h5 class="text-xl font-medium leading-tight mt-2">Loading</h5>
+      </div>
+      <div id="canvas-container" class="hidden flex flex-col justify-center items-center">
+        <canvas id="canvas" class="w-[768px] h-[768px]" oncontextmenu="event.preventDefault()" tabindex=-1 />
+      </div>
+      <video id="video"></video>
+      <div class="flex flex-col justify-end w-96 h-[768px] form-control ml-8">
+        <label for="resize-canvas" class="label cursor-pointer justify-start">
+          <input id="resize-canvas" type="checkbox" class="checkbox checkbox-primary" />
+          <span class="label-text ml-4">Resize Canvas</span>
+        </label>
+        <label for="hide-pointer" class="label cursor-pointer justify-start">
+          <input id="hide-pointer" type="checkbox" class="checkbox checkbox-primary"
+            onchange="handleHideMousePointer(this)" />
+          <span class="label-text ml-4">Lock/Hide Mouse Pointer</span>
+        </label>
+        <label for="full-screen" class="label cursor-pointer justify-start">
+          <button class="btn btn-primary btn-outline" onclick="handleFullscreen(this)">Enter fullscreen</button>
+        </label>
+        <label for="output" class="block mt-4 text-sm font-medium text-gray-900 dark:text-white">Output</label>
+        <textarea id="output" rows="8" readonly class="textarea textarea-primary rounded-md mt-2 text-xs resize-none"
+          placeholder=""></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script type='text/javascript'>
+    var canvasContainerElement = document.getElementById('canvas-container');
+    var canvasElement = document.getElementById('canvas');
+    var resizeCanvasCheckbox = document.getElementById('resize-canvas');
+    var spinnerElement = document.getElementById('spinner-container');
+    var hideMousePointerElement = document.getElementById('hide-pointer');
+    var outputElement = document.getElementById('output');
+
+    function output(text) {
+      console.log(text);
+      if (outputElement) {
+        var date = new Date(Date.now())
+        outputElement.value += date.toLocaleDateString(undefined, { year: "2-digit", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric" }) + ": " + text + "\n";
+        outputElement.scrollTop = outputElement.scrollHeight; // focus on bottom
+      }
+    }
+
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: (function () {
+        if (outputElement) outputElement.value = ''; // clear browser cache
+        return function (text) {
+          output(text);
+        };
+      })(),
+      printErr: (function () {
+        if (outputElement) outputElement.value = ''; // clear browser cache
+        return function (text) {
+          output(text);
+        };
+      })(),
+      onRuntimeInitialized: function () {
+        output("WASM runtime has been initialized.");
+        canvasContainerElement.classList.remove("hidden");
+        spinnerElement.classList.add("hidden");
+      },
+      canvas: (() => {
+        var canvas = document.getElementById('canvas');
+
+        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+        // application robust, you may want to override this behavior before shipping!
+        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+        // output("Add event listener to canvas")
+        canvas.addEventListener("webglcontextlost", (e) => {
+          output('WebGL context lost. You will need to reload the page.');
+          e.preventDefault();
+        }, false);
+
+        return canvas;
+      })(),
+      totalDependencies: 0,
+      monitorRunDependencies: (left) => {
+        Module.totalDependencies = Math.max(Module.totalDependencies, left);
+        output(`${Module.totalDependencies - left}/${Module.totalDependencies} dependencies loaded`);
+      }
+    };
+    window.onerror = () => {
+      Module.print('Exception thrown, see JavaScript console');
+      spinnerElement.classList.add("hidden");
+      canvasContainerElement.classList.add("hidden");
+    };
+
+    window.addEventListener("fullscreenchange", (event) => {
+      if (!resizeCanvasCheckbox.checked) {
+        return;
+      }
+
+      let classNamesToRemove = [];
+      canvasElement.classList.forEach((value, key, listObj) => {
+        if (value.match(/[w|h]-[[0-9]+px]/)) {
+          classNamesToRemove.push(value);
+        }
+      });
+      for (let className of classNamesToRemove) {
+        canvasElement.classList.remove(className);
+      }
+
+      if (document.fullscreenElement) {
+        Module.print(`Enter fullscreen width=${window.screen.width} height=${window.screen.height}`);
+        canvasElement.classList.add(`w-[${window.screen.width}px]`);
+        canvasElement.classList.add(`h-[${window.screen.height}px]`);
+      } else {
+        Module.print("Exit fullscreen");
+        canvasElement.classList.add("w-[768px]");
+        canvasElement.classList.add("h-[768px]");
+      }
+    });
+
+    function handleHideMousePointer(checkElement) {
+      Module.print('Hide Mouse Pointer: ' + checkElement.checked);
+      if (checkElement.checked) {
+        canvasContainerElement.classList.add("cursor-none");
+      } else {
+        canvasContainerElement.classList.remove("cursor-none");
+      }
+    }
+
+    function handleFullscreen() {
+      canvasContainerElement.requestFullscreen();
+    }
+  </script>
+  {{{ SCRIPT }}}
+</body>
+
+</html>
