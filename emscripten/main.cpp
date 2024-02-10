@@ -54,6 +54,7 @@ return pointer;
 EM_JS(emscripten::EM_VAL, get_video_stream_js, (), {
 var video = document.getElementById('video');
 var canvas_process = document.createElement('canvas');
+canvas_process.id = 'canvas_process';
 var context_process = canvas_process.getContext('2d');
 context_process.fillStyle = 'black';
 (context_process.fillRect(0, 0, 640, 480));
@@ -62,9 +63,10 @@ var imageData = (context_process.getImageData(0, 0, 640, 480));
 return Emval.toHandle(imageData.data);
 })
 
-cv::Mat convertVideo2Gray(int pointer, size_t width, size_t height) {
+cv::Mat convertVideo2Gray(emscripten::val data_buffer, size_t width, size_t height) {
+    auto u8 = emscripten::convertJSArrayToNumberVector<uint8_t>(data_buffer);
     cv::Mat grayVideo(height, width, CV_8UC1);
-    cv::Mat videoMat = cv::Mat(height, width, CV_8UC4, pointer);
+    cv::Mat videoMat = cv::Mat(height, width, CV_8UC4, u8.data());
     cv::cvtColor(videoMat, grayVideo, cv::COLOR_RGBA2GRAY);
     return videoMat;
 }
@@ -72,8 +74,7 @@ cv::Mat convertVideo2Gray(int pointer, size_t width, size_t height) {
 EM_JS(void, displayGrayVideo, (emscripten::EM_VAL video, size_t width, size_t height), {
     var canvas = document.getElementById('canvasGray');
     var context = canvas.getContext('2d');
-    var videoBuff = Emval.toValue(video);
-    var imageData = (new ImageData(videoBuff, width, height));
+    var imageData = (new ImageData(new Uint8ClampedArray(Emval.toValue(video)), width, height));
     (context.putImageData(imageData, 0, 0));
 })
 
@@ -115,7 +116,7 @@ int main(int argc, char *argv[]) {
 
         displayGrayVideo(video.as_handle(), 640, 480);
 
-        cv::Mat cameraFrame = convertVideo2Gray(pointer, 640, 480);
+        cv::Mat cameraFrame = convertVideo2Gray(video, 640, 480);
 
         // Find a pattern and update it's detection status:
         context.isPatternPresent = pipeline.processFrame(cameraFrame);
