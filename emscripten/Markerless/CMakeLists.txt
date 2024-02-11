@@ -24,7 +24,6 @@ FetchContent_MakeAvailable(build_opencv)
 get_filename_component(PARENT_DIR ./ ABSOLUTE)
 
 set(PUBLIC_HEADERS
-        include/ARDrawingContext.hpp
         include/ARPipeline.hpp
         include/CameraCalibration.hpp
         include/GeometryTypes.hpp
@@ -34,7 +33,6 @@ set(PUBLIC_HEADERS
 )
 
 set(SOURCE
-        src/ARDrawingContext.cpp
         src/ARPipeline.cpp
         src/CameraCalibration.cpp
         src/GeometryTypes.cpp
