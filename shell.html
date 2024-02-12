@@ -84,10 +84,8 @@
         console.log(pipeline);
         var tr = new Module.Transformation();
         console.log(tr);
-        var inverted = tr.getInverted();
-        console.log(inverted)
         var mat44 = tr.getMat44();
-        console.log(mat44.data);
+        console.log(mat44);
         canvasContainerElement.classList.remove("hidden");
         spinnerElement.classList.add("hidden");
       },

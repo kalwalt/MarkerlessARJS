@@ -10,14 +10,6 @@ using namespace emscripten;
 
 class Matrix44_em {
 public:
-  /*Matrix44_em() {
-    m_matrix = new Matrix44();
-  }*/
-
-  /*Matrix44_em(const Matrix44_em& matrix) {
-    m_matrix = matrix;
-  }*/
-
   emscripten::val getData() const {
    return emscripten::val{emscripten::typed_memory_view(16, &m_matrix.data[0])};
   };
@@ -42,6 +34,24 @@ public:
   }
 
   Matrix44 m_matrix;
+};
+
+class Transformation_em {
+public:
+  Transformation_em() {
+    m_transformation = Transformation();
+  }
+
+  Transformation_em(const Matrix33& rotation, const Vector3& translation) {
+    m_transformation = Transformation(rotation, translation);
+  }
+
+  emscripten::val getMat44() const {
+    Matrix44 mat44 = m_transformation.getMat44();
+    return emscripten::val{emscripten::typed_memory_view(16, &mat44.data[0])};
+  }
+
+  Transformation m_transformation;
 };
 
 class ARPipeline_em {
@@ -74,7 +84,6 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
 
   class_<Matrix44_em>("Matrix44")
   .property("data", &Matrix44_em::getData, &Matrix44_em::setData)
-  //.function("mat", &Matrix44::mat)
   .function("getTransposed", &Matrix44_em::getTransposed)
   .function("getInvertedRT", &Matrix44_em::getInvertedRT)
   .class_function("identity", &Matrix44_em::identity);
@@ -88,10 +97,9 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
  .function("processFrame", &ARPipeline_em::processFrame)
  .function("getPatternLocation", &ARPipeline_em::getPatternLocation);
 
-  class_<Transformation>("Transformation")
+  class_<Transformation_em>("Transformation")
   .constructor<>()
   .constructor<const Matrix33&, const Vector3&>()
-  .function("getMat44", &Transformation::getMat44)
-  .function("getInverted", &Transformation::getInverted);
-
+  .function("getMat44", &Transformation_em::getMat44);
+  //.function("getInverted", &Transformation_em::getInverted);
 }
