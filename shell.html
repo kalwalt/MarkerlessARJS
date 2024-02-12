@@ -82,6 +82,12 @@
         var buff = new Uint8Array(4);
         var pipeline = new Module.ARPipeline(2, 2, buff, cc);
         console.log(pipeline);
+        var tr = new Module.Transformation();
+        console.log(tr);
+        var inverted = tr.getInverted();
+        console.log(inverted)
+        var mat44 = tr.getMat44();
+        console.log(mat44.data);
         canvasContainerElement.classList.remove("hidden");
         spinnerElement.classList.add("hidden");
       },
