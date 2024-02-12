@@ -2,10 +2,47 @@
 #include <emscripten/val.h>
 #include <ARPipeline.hpp>
 #include <CameraCalibration.hpp>
+#include <GeometryTypes.hpp>
 #include <opencv2/core.hpp>
 //#include "MarkerlessARJS.h"
 
 using namespace emscripten;
+
+class Matrix44_em {
+public:
+  /*Matrix44_em() {
+    m_matrix = new Matrix44();
+  }*/
+
+  /*Matrix44_em(const Matrix44_em& matrix) {
+    m_matrix = matrix;
+  }*/
+
+  emscripten::val getData() const {
+   return emscripten::val{emscripten::typed_memory_view(16, &m_matrix.data[0])};
+  };
+
+  void setData(const emscripten::val data) {
+    auto f = emscripten::vecFromJSArray<float>(data);
+    for (int i = 0; i < 16; i++) {
+      m_matrix.data[i] = f[i];
+    };
+  }
+
+  Matrix44 getTransposed() const {
+    return m_matrix.getTransposed();
+  }
+
+  Matrix44 getInvertedRT() const {
+    return m_matrix.getInvertedRT();
+  }
+
+  static Matrix44 identity() {
+    return Matrix44::identity();
+  }
+
+  Matrix44 m_matrix;
+};
 
 class ARPipeline_em {
 public:
@@ -35,13 +72,12 @@ public:
 
 EMSCRIPTEN_BINDINGS(constant_bindings) {
 
-  /*class_<MarkerlessARJS>("MarkerlessARJS")
-  .constructor()
-  .function("setupCamera", &MarkerlessARJS::setupCamera)
-  .function("initGL", &MarkerlessARJS::initGL)
-  .function("processPatternImage", &MarkerlessARJS::processPatternImage)
-  .function("processVideoFrame", &MarkerlessARJS::processVideoFrame)
-  .function("getPatternPose", &MarkerlessARJS::getPatternPose);*/
+  class_<Matrix44_em>("Matrix44")
+  .property("data", &Matrix44_em::getData, &Matrix44_em::setData)
+  //.function("mat", &Matrix44::mat)
+  .function("getTransposed", &Matrix44_em::getTransposed)
+  .function("getInvertedRT", &Matrix44_em::getInvertedRT)
+  .class_function("identity", &Matrix44_em::identity);
 
   class_<CameraCalibration>("CameraCalibration")
   .constructor<float, float, float, float>()
@@ -51,5 +87,11 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
  .constructor<size_t, size_t, const emscripten::val, CameraCalibration>()
  .function("processFrame", &ARPipeline_em::processFrame)
  .function("getPatternLocation", &ARPipeline_em::getPatternLocation);
+
+  class_<Transformation>("Transformation")
+  .constructor<>()
+  .constructor<const Matrix33&, const Vector3&>()
+  .function("getMat44", &Transformation::getMat44)
+  .function("getInverted", &Transformation::getInverted);
 
 }
