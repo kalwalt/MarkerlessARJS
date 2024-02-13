@@ -72,8 +72,10 @@ public:
     return m_pipeline.processFrame(inputFrameMat);
   }
 
-  const Transformation& getPatternLocation() const {
-    return m_pipeline.getPatternLocation();
+  emscripten::val getPatternMat44() const {
+    Transformation transformation = m_pipeline.getPatternLocation();
+    Matrix44 mat44 = transformation.getMat44();
+    return emscripten::val{emscripten::typed_memory_view(16, &mat44.data[0])};
   }
 
   ARPipeline m_pipeline;
@@ -95,7 +97,7 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
   class_<ARPipeline_em>("ARPipeline")
  .constructor<size_t, size_t, const emscripten::val, CameraCalibration>()
  .function("processFrame", &ARPipeline_em::processFrame)
- .function("getPatternLocation", &ARPipeline_em::getPatternLocation);
+ .function("getPatternMat44", &ARPipeline_em::getPatternMat44);
 
   class_<Transformation_em>("Transformation")
   .constructor<>()
