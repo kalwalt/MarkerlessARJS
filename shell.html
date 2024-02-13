@@ -50,7 +50,6 @@
 
     function output(text) {
       console.log(text);
-      console.log(Module);
      
       if (outputElement) {
         var date = new Date(Date.now())
@@ -76,16 +75,43 @@
       })(),
       onRuntimeInitialized: function () {
         output("WASM runtime has been initialized.");
-        console.log(Module);
-        var cc = new Module.CameraCalibration(2.1, 3.4, 1.0, 2.0);
+        var pipeline;
+        var cc = new Module.CameraCalibration(526.58037684199849, 524.65577209994706, 318.41744018680112, 202.96659047014398);
         console.log(cc); 
-        var buff = new Uint8Array(4);
-        var pipeline = new Module.ARPipeline(2, 2, buff, cc);
-        console.log(pipeline);
-        var tr = new Module.Transformation();
-        console.log(tr);
-        var mat44 = tr.getMat44();
-        console.log(mat44);
+        fetch("../../data/pinball.jpg").then( (response) => { 
+          if (!response.ok) {
+           
+          throw new Error("Network response was not OK");
+        }
+        return response.arrayBuffer();
+          })
+          .then( (buffer)=>{
+            var buff = new Uint8Array(buffer);
+            pipeline = new Module.ARPipeline(614, 768, buff, cc);
+            console.log(pipeline);
+            fetch("../../data/pinball-test.jpg")
+          .then( (response) => {
+            if (!response.ok) {
+           
+           throw new Error("Network response was not OK");
+         }
+         return response.arrayBuffer();
+          }).then( (buffer)=>{
+            var buff = new Uint8Array(buffer);
+            var ok = pipeline.processFrame(buff, 869, 587);
+            console.log(ok);
+          }).catch( (error) => {
+            console.error('There has been a problem while fetching pinball-test:', error);
+          });
+            var tr = new Module.Transformation();
+            console.log(tr);
+            var mat44 = tr.getMat44();
+            console.log(mat44);
+          })
+          .catch( (error) => {
+            console.error('There has been a problem with your fetch operation:', error);
+          });
+
         canvasContainerElement.classList.remove("hidden");
         spinnerElement.classList.add("hidden");
       },
@@ -109,6 +135,18 @@
         output(`${Module.totalDependencies - left}/${Module.totalDependencies} dependencies loaded`);
       }
     };
+
+    function writeStringToFS(target, string, callback) {
+      var byteArray = new Uint8Array(string.length);
+      for (var i = 0; i < byteArray.length; i++) {
+        byteArray[i] = string.charCodeAt(i) & 0xff;
+      }
+       writeByteArrayToFS(target, byteArray, callback);
+    }
+    function writeByteArrayToFS(target, byteArray, callback) {
+      Module.FS.writeFile(target, byteArray, { encoding: "binary" });
+      callback(byteArray);
+    }
     window.onerror = () => {
       Module.print('Exception thrown, see JavaScript console');
       spinnerElement.classList.add("hidden");
