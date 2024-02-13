@@ -98,6 +98,8 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
     // Get matches with current pattern
     getMatches(m_queryDescriptors, m_matches);
 
+    std::cout << "Num Matches: " << m_matches.size() << std::endl;
+
     // Find homography transformation and detect good matches
     bool homographyFound = refineMatchesWithHomography(
         m_queryKeypoints,
@@ -105,6 +107,8 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
         homographyReprojectionThreshold,
         m_matches,
         m_roughHomography);
+
+    std::cout << "Homography found: " << (bool)homographyFound << std::endl;
 
     if (homographyFound)
     {
@@ -154,9 +158,11 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 void PatternDetector::getGray(const cv::Mat& image, cv::Mat& gray)
 {
     if (image.channels()  == 3)
-        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+        //cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY); 
+        cv::cvtColor(image, gray, cv::COLOR_RGB2GRAY);
     else if (image.channels() == 4)
-        cv::cvtColor(image, gray, cv::COLOR_BGRA2GRAY);
+        //cv::cvtColor(image, gray, cv::COLOR_BGRA2GRAY);
+        cv::cvtColor(image, gray, cv::COLOR_RGBA2GRAY);
     else if (image.channels() == 1)
         gray = image;
 }
@@ -167,6 +173,7 @@ bool PatternDetector::extractFeatures(const cv::Mat& image, std::vector<cv::KeyP
     assert(image.channels() == 1);
 
     m_detector->detect(image, keypoints);
+    std::cout << keypoints.size() << std::endl;
     if (keypoints.empty())
         return false;
 
@@ -222,6 +229,8 @@ bool PatternDetector::refineMatchesWithHomography
 {
     const int minNumberMatchesAllowed = 8;
 
+    std::cout << "Number of matches inside refineatchesWithHomography: " << matches.size() << std::endl;
+
     if (matches.size() < minNumberMatchesAllowed)
         return false;
 
@@ -236,6 +245,7 @@ bool PatternDetector::refineMatchesWithHomography
     }
 
     // Find homography matrix and get inliers mask
+    std::cout << "SrcPoints size: " << srcPoints.size() << std::endl;
     std::vector<unsigned char> inliersMask(srcPoints.size());
     homography = cv::findHomography(srcPoints,
                                     dstPoints,
