@@ -50,7 +50,7 @@
 
     function output(text) {
       console.log(text);
-     
+
       if (outputElement) {
         var date = new Date(Date.now())
         outputElement.value += date.toLocaleDateString(undefined, { year: "2-digit", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric" }) + ": " + text + "\n";
@@ -77,38 +77,40 @@
         output("WASM runtime has been initialized.");
         var pipeline;
         var cc = new Module.CameraCalibration(526.58037684199849, 524.65577209994706, 318.41744018680112, 202.96659047014398);
-        console.log(cc); 
-        fetch("../../data/pinball.jpg").then( (response) => { 
+        console.log(cc);
+        fetch("../../data/pinball.jpg").then((response) => {
           if (!response.ok) {
-           
-          throw new Error("Network response was not OK");
-        }
-        return response.arrayBuffer();
-          })
-          .then( (buffer)=>{
+
+            throw new Error("Network response was not OK");
+          }
+          return response.arrayBuffer();
+        })
+          .then((buffer) => {
             var buff = new Uint8Array(buffer);
             pipeline = new Module.ARPipeline(614, 768, buff, cc);
             console.log(pipeline);
             fetch("../../data/pinball-test.jpg")
-          .then( (response) => {
-            if (!response.ok) {
-           
-           throw new Error("Network response was not OK");
-         }
-         return response.arrayBuffer();
-          }).then( (buffer)=>{
-            var buff = new Uint8Array(buffer);
-            var ok = pipeline.processFrame(buff, 869, 587);
-            console.log(ok);
-          }).catch( (error) => {
-            console.error('There has been a problem while fetching pinball-test:', error);
-          });
-            var tr = new Module.Transformation();
-            console.log(tr);
-            var mat44 = tr.getMat44();
-            console.log(mat44);
+              .then((response) => {
+                if (!response.ok) {
+
+                  throw new Error("Network response was not OK");
+                }
+                return response.arrayBuffer();
+              }).then((buffer) => {
+                var buff = new Uint8Array(buffer);
+                var ok = pipeline.processFrame(buff, 4000, 3000);
+                console.log(ok);
+                var tr = new Module.Transformation();
+                console.log(tr);
+                var loc = pipeline.getPatternMat44();
+                console.log(loc);
+                //var mat44 = loc.getMat44();
+                //console.log(mat44);
+              }).catch((error) => {
+                console.error('There has been a problem while fetching pinball-test:', error);
+              });
           })
-          .catch( (error) => {
+          .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
           });
 
@@ -141,7 +143,7 @@
       for (var i = 0; i < byteArray.length; i++) {
         byteArray[i] = string.charCodeAt(i) & 0xff;
       }
-       writeByteArrayToFS(target, byteArray, callback);
+      writeByteArrayToFS(target, byteArray, callback);
     }
     function writeByteArrayToFS(target, byteArray, callback) {
       Module.FS.writeFile(target, byteArray, { encoding: "binary" });
