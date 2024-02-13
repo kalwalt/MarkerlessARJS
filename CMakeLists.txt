@@ -85,14 +85,13 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # https://github.com/kripken/emscripten/blob/master/src/settings.js#L85
     # set(TOTAL_STACK "-s TOTAL_STACK=5*1024*1024)"
     set(DEBUG_EMCC " -g4 -s ASSERTIONS=2 --js-opts 0 -s DEMANGLE_SUPPORT=0 -O0 " )
-    set(WASM "-s WASM=0")
 else()
     set(OPTIMIZE_EMCC " -Oz ")
-    set(WASM " -s WASM=1 " )
     #set(ES6_FLAGS  " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
-    set(SINGLE_FILE " -s SINGLE_FILE=1 ")
 endif()
 
+set(WASM "-s WASM=1")
+set(SINGLE_FILE " -s SINGLE_FILE=1 ")
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 set_target_properties(MarkerlessARJS PROPERTIES LINK_FLAGS  "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html")
