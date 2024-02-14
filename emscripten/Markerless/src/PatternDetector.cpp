@@ -173,7 +173,7 @@ bool PatternDetector::extractFeatures(const cv::Mat& image, std::vector<cv::KeyP
     assert(image.channels() == 1);
 
     m_detector->detect(image, keypoints);
-    std::cout << keypoints.size() << std::endl;
+    std::cout << "Keypoints num: " <<  keypoints.size() << std::endl;
     if (keypoints.empty())
         return false;
 
@@ -259,7 +259,7 @@ bool PatternDetector::refineMatchesWithHomography
         if (inliersMask[i])
             inliers.push_back(matches[i]);
     }
-
+    std::cout << "Num inliers: " << inliers.size() << std::endl;
     matches.swap(inliers);
     return matches.size() > minNumberMatchesAllowed;
 }
