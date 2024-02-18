@@ -14,10 +14,7 @@ function isMobile() {
     return /Android|mobile|iPad|iPhone/i.test(navigator.userAgent);
 }
 
-var buildCameraProj = function (input_width, input_height, camera, projMat) {
-    console.log(projMat);
-    var proj = [-2, 0, 0, 0, 0, 2, 0, 0, 0, 0, -1.0000200271606445, -1, 0, 0, -0.02000020071864128, 0];
-    console.log(proj);
+var buildCameraProj = function (input_width, input_height, camera, proj) {
     var vw, vh, sw, sh, pw, ph, pscale, sscale;
     vw = input_width;
     vh = input_height;
@@ -43,13 +40,10 @@ var buildCameraProj = function (input_width, input_height, camera, projMat) {
     proj[5] *= ratioH;
     proj[9] *= ratioH;
     proj[13] *= ratioH;
-    console.log(proj);
+
     setMatrix(camera.projectionMatrix, proj);
 }
 var renderThreeJS = function (detected, cameraMatrix, matrix) {
-    console.log(detected);
-    console.log(cameraMatrix);
-    console.log(matrix);
     var renderer = new THREE.WebGLRenderer({ canvas: canvasElement, alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -59,7 +53,6 @@ var renderThreeJS = function (detected, cameraMatrix, matrix) {
 
     camera.matrixAutoUpdate = false;
     scene.add(camera);
-    console.log(camera.projectionMatrix);
 
     var sphere = new THREE.Mesh(
         new THREE.SphereGeometry(0.5, 8, 8),
@@ -70,18 +63,15 @@ var renderThreeJS = function (detected, cameraMatrix, matrix) {
 
     sphere.material.flatShading;
     sphere.visible = false;
-    //sphere.scale.set(2, 2, 2);
+
     root.matrixAutoUpdate = false;
     root.add(sphere);
     buildCameraProj(4000, 3000, camera, cameraMatrix);
-    console.log(camera.projectionMatrix);
+
     if (detected == true) {
         sphere.visible = true;
-
         setMatrix(root.matrix, matrix);
     }
-
-    console.log(root.matrix);
 
     renderer.setSize(4000, 3000);
     renderer.render(scene, camera);

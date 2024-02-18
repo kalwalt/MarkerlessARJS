@@ -111,7 +111,11 @@ emscripten::val buildProjectionMatrix(const CameraCalibration& calibration, floa
   projectionMatrix.data[14] = -2.0f * farPlane * nearPlane / ( farPlane - nearPlane );        
   projectionMatrix.data[15] = 0.0f;
 
-  return emscripten::val{emscripten::typed_memory_view(16, &projectionMatrix.data[0])};
+  emscripten::val arr = emscripten::val::array();
+  for (auto i = 0; i < 16; i++) {
+     arr.call<void>("push",  projectionMatrix.data[i]);
+  }
+  return arr;
 }
 
 
