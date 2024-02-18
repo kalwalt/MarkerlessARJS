@@ -81,6 +81,40 @@ public:
   ARPipeline m_pipeline;
 };
 
+emscripten::val buildProjectionMatrix(const CameraCalibration& calibration, float nearPlane, float farPlane, int screen_width, int screen_height)
+{
+  Matrix44 projectionMatrix;
+
+  // Camera parameters
+  float f_x = calibration.fx(); // Focal length in x axis
+  float f_y = calibration.fy(); // Focal length in y axis (usually the same?)
+  float c_x = calibration.cx(); // Camera primary point x
+  float c_y = calibration.cy(); // Camera primary point y
+
+  projectionMatrix.data[0] = -2.0f * f_x / screen_width;
+  projectionMatrix.data[1] = 0.0f;
+  projectionMatrix.data[2] = 0.0f;
+  projectionMatrix.data[3] = 0.0f;
+
+  projectionMatrix.data[4] = 0.0f;
+  projectionMatrix.data[5] = 2.0f * f_y / screen_height;
+  projectionMatrix.data[6] = 0.0f;
+  projectionMatrix.data[7] = 0.0f;
+
+  projectionMatrix.data[8] = 2.0f * c_x / screen_width - 1.0f;
+  projectionMatrix.data[9] = 2.0f * c_y / screen_height - 1.0f;    
+  projectionMatrix.data[10] = -( farPlane + nearPlane) / ( farPlane - nearPlane );
+  projectionMatrix.data[11] = -1.0f;
+
+  projectionMatrix.data[12] = 0.0f;
+  projectionMatrix.data[13] = 0.0f;
+  projectionMatrix.data[14] = -2.0f * farPlane * nearPlane / ( farPlane - nearPlane );        
+  projectionMatrix.data[15] = 0.0f;
+
+  return emscripten::val{emscripten::typed_memory_view(16, &projectionMatrix.data[0])};
+}
+
+
 
 EMSCRIPTEN_BINDINGS(constant_bindings) {
 
@@ -104,4 +138,6 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
   .constructor<const Matrix33&, const Vector3&>()
   .function("getMat44", &Transformation_em::getMat44);
   //.function("getInverted", &Transformation_em::getInverted);
+
+  function("buildProjectionMatrix", &buildProjectionMatrix);
 }

@@ -18,7 +18,7 @@
         <h5 class="text-xl font-medium leading-tight mt-2">Loading</h5>
       </div>
       <div id="canvas-container" class="hidden flex flex-col justify-center items-center">
-        <canvas id="canvas" class="w-[768px] h-[768px]" oncontextmenu="event.preventDefault()" tabindex=-1 />
+        <canvas id="canvas" class="w-[4000px] h-[3000px]" oncontextmenu="event.preventDefault()" tabindex=-1 />
       </div>
       <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
       <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
@@ -80,22 +80,21 @@
       onRuntimeInitialized: function () {
         output("WASM runtime has been initialized.");
         var pipeline;
-        var cc = new Module.CameraCalibration(526.58037684199849, 524.65577209994706, 318.41744018680112, 202.96659047014398);
+        var cc = new Module.CameraCalibration(4000, 3000, 2000, 1500);
         console.log(cc);
-        var buff = imread('pinball');
-        console.log(buff);
-        pipeline = new Module.ARPipeline(1637, 2048, buff, cc);
+        var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 4000, 3000);
+        console.log(projMat);
+        var pinball_buff = imread('pinball');
+        pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
         console.log(pipeline);
-        var bufft = imread('pinball-test');
-        var ok = pipeline.processFrame(bufft, 4000, 3000);
+        var pinball_test_buff = imread('pinball-test');
+        var ok = pipeline.processFrame(pinball_test_buff, 4000, 3000);
         console.log(ok);
-        var tr = new Module.Transformation();
-        console.log(tr);
         var loc = pipeline.getPatternMat44();
         console.log(loc);
+        renderThreeJS(ok, projMat, loc);
         canvasContainerElement.classList.remove("hidden");
         spinnerElement.classList.add("hidden");
-        renderThreeJS(ok, [], loc);
       },
       canvas: (() => {
         var canvas = document.getElementById('canvas');
