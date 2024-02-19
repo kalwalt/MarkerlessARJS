@@ -155,6 +155,10 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
     return homographyFound;
 }
 
+cv::Mat PatternDetector::getHomography() const {
+    return m_refinedHomography;
+}
+
 void PatternDetector::getGray(const cv::Mat& image, cv::Mat& gray)
 {
     if (image.channels()  == 3)

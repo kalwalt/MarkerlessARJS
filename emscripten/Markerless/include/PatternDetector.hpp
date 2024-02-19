@@ -55,6 +55,8 @@ public:
     */
     bool findPattern(const cv::Mat& image, PatternTrackingInfo& info);
 
+    cv::Mat getHomography() const;
+
     bool enableRatioTest;
     bool enableHomographyRefinement;
     float homographyReprojectionThreshold;
