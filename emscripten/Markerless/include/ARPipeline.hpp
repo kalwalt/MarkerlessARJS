@@ -27,6 +27,8 @@ public:
 
   const Transformation& getPatternLocation() const;
 
+  cv::Mat getHomography() const;
+
   PatternDetector     m_patternDetector;
 private:
 

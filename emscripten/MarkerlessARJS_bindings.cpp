@@ -78,6 +78,15 @@ public:
     return emscripten::val{emscripten::typed_memory_view(16, &mat44.data[0])};
   }
 
+  emscripten::val getHomography() const {
+    cv::Mat h = m_pipeline.getHomography();
+    emscripten::val homography = emscripten::val::array();
+    for (auto i = 0; i < 9; i++) {
+        homography.call<void>("push", h.data[i]);
+    }
+    return homography;
+  }
+
   ARPipeline m_pipeline;
 };
 
@@ -135,7 +144,8 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
   class_<ARPipeline_em>("ARPipeline")
  .constructor<size_t, size_t, const emscripten::val, CameraCalibration>()
  .function("processFrame", &ARPipeline_em::processFrame)
- .function("getPatternMat44", &ARPipeline_em::getPatternMat44);
+ .function("getPatternMat44", &ARPipeline_em::getPatternMat44)
+ .function("getHomography", &ARPipeline_em::getHomography);
 
   class_<Transformation_em>("Transformation")
   .constructor<>()
