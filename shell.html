@@ -92,6 +92,8 @@
         console.log(ok);
         var loc = pipeline.getPatternMat44();
         console.log(loc);
+        var h = pipeline.getHomography();
+        console.log(h);
         renderThreeJS(ok, projMat, loc);
         canvasContainerElement.classList.remove("hidden");
         spinnerElement.classList.add("hidden");
