@@ -1,3 +1,5 @@
+var oWidth = 4000;
+var oHeight = 3000;
 var setMatrix = function (matrix, value) {
     var array = [];
     for (var key in value) {
@@ -43,7 +45,13 @@ var buildCameraProj = function (input_width, input_height, camera, proj) {
 
     setMatrix(camera.projectionMatrix, proj);
 }
-var renderThreeJS = function (detected, cameraMatrix, matrix) {
+var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
+    var overlayCanvas;
+    createOverlayCanvas();
+
+    var arElem = document.getElementById("arElem");
+    arElem.style["transform-origin"] = "top left"; // default is center
+    arElem.style.zIndex = 2;
     var renderer = new THREE.WebGLRenderer({ canvas: canvasElement, alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -67,13 +75,87 @@ var renderThreeJS = function (detected, cameraMatrix, matrix) {
     root.matrixAutoUpdate = false;
     root.add(sphere);
     buildCameraProj(4000, 3000, camera, cameraMatrix);
+    //clearOverlayCtx();
+    arElem.style.display = "none";
+    clearOverlayCtx();
 
     if (detected == true) {
         sphere.visible = true;
         setMatrix(root.matrix, matrix);
+        arElem.style.display = "block";
+        transformElem(homo, arElem);
+        drawCorners(corners)
     }
 
     renderer.setSize(4000, 3000);
     renderer.render(scene, camera);
     console.log("scene rendered");
+}
+
+function setVideoStyle(elem) {
+    elem.style.position = "absolute";
+    elem.style.top = 0;
+    elem.style.left = 0;
+}
+
+function createOverlayCanvas() {
+    overlayCanvas = document.createElement("canvas");
+    setVideoStyle(overlayCanvas);
+    overlayCanvas.id = "overlay";
+    overlayCanvas.width = oWidth;
+    overlayCanvas.height = oHeight;
+    overlayCanvas.style.zIndex = 100;
+    document.body.appendChild(overlayCanvas);
+}
+
+function transformElem(h, elem) {
+    // column major order
+    let transform = [
+        h[0],
+        h[3],
+        0,
+        h[6],
+        h[1],
+        h[4],
+        0,
+        h[7],
+        0,
+        0,
+        1,
+        0,
+        h[2],
+        h[5],
+        0,
+        h[8],
+    ];
+    transform = "matrix3d(" + transform.join(",") + ")";
+    elem.style["-ms-transform"] = transform;
+    elem.style["-webkit-transform"] = transform;
+    elem.style["-moz-transform"] = transform;
+    elem.style["-o-transform"] = transform;
+    elem.style.transform = transform;
+    elem.style.display = "block";
+}
+
+function clearOverlayCtx() {
+    const overlayCtx = overlayCanvas.getContext("2d");
+    overlayCtx.clearRect(0, 0, oWidth, oHeight);
+}
+
+function drawCorners(corners) {
+    const overlayCtx = overlayCanvas.getContext("2d");
+    clearOverlayCtx();
+
+    overlayCtx.beginPath();
+    overlayCtx.strokeStyle = "blue";
+    overlayCtx.lineWidth = 3;
+
+    // [x1,y1,x2,y2,x3,y3,x4,y4]
+    overlayCtx.moveTo(corners[0][0], corners[0][1]);
+    overlayCtx.lineTo(corners[1][0], corners[1][1]);
+    overlayCtx.lineTo(corners[2][0], corners[2][1]);
+    overlayCtx.lineTo(corners[3][0], corners[3][1]);
+    overlayCtx.lineTo(corners[0][0], corners[0][1]);
+
+    overlayCtx.stroke();
 }
