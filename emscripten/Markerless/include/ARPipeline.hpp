@@ -29,6 +29,8 @@ public:
 
   cv::Mat getHomography() const;
 
+  std::vector<cv::Point2f> getCorners() const;
+
   PatternDetector     m_patternDetector;
 private:
 
