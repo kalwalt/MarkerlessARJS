@@ -42,5 +42,10 @@ const Transformation& ARPipeline::getPatternLocation() const
 
 cv::Mat ARPipeline::getHomography() const
 {
-  return m_patternDetector.getHomography();
+  return m_patternInfo.homography;
+}
+
+std::vector<cv::Point2f> ARPipeline::getCorners() const
+{
+  return m_patternInfo.points2d;
 }

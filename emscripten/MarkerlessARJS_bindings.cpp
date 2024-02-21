@@ -87,6 +87,18 @@ public:
     return homography;
   }
 
+  emscripten::val getCorners() const {
+    std::vector<cv::Point2f> corners = m_pipeline.getCorners();
+    emscripten::val cornersArray = emscripten::val::array();
+    for (auto i = 0; i < corners.size(); i++) {
+        emscripten::val point = emscripten::val::array();
+        point.call<void>("push", corners[i].x);
+        point.call<void>("push", corners[i].y);
+        cornersArray.call<void>("push", point);
+    }
+    return cornersArray;
+  }
+
   ARPipeline m_pipeline;
 };
 
@@ -145,7 +157,8 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
  .constructor<size_t, size_t, const emscripten::val, CameraCalibration>()
  .function("processFrame", &ARPipeline_em::processFrame)
  .function("getPatternMat44", &ARPipeline_em::getPatternMat44)
- .function("getHomography", &ARPipeline_em::getHomography);
+ .function("getHomography", &ARPipeline_em::getHomography)
+ .function("getCorners", &ARPipeline_em::getCorners);
 
   class_<Transformation_em>("Transformation")
   .constructor<>()
