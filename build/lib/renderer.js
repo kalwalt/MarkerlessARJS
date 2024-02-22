@@ -1,5 +1,7 @@
 var oWidth = 4000;
 var oHeight = 3000;
+var arElem, overlayCanvas, displayImageCanvas;
+
 var setMatrix = function (matrix, value) {
     var array = [];
     for (var key in value) {
@@ -46,10 +48,9 @@ var buildCameraProj = function (input_width, input_height, camera, proj) {
     setMatrix(camera.projectionMatrix, proj);
 }
 var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
-    var overlayCanvas;
     createOverlayCanvas();
 
-    var arElem = document.getElementById("arElem");
+    arElem = document.getElementById("arElem");
     arElem.style["transform-origin"] = "top left"; // default is center
     arElem.style.zIndex = 2;
     var renderer = new THREE.WebGLRenderer({ canvas: canvasElement, alpha: true, antialias: true });
@@ -75,21 +76,35 @@ var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
     root.matrixAutoUpdate = false;
     root.add(sphere);
     buildCameraProj(4000, 3000, camera, cameraMatrix);
-    //clearOverlayCtx();
+    // clearOverlayCtx();
     arElem.style.display = "none";
     clearOverlayCtx();
 
     if (detected == true) {
         sphere.visible = true;
         setMatrix(root.matrix, matrix);
-        arElem.style.display = "block";
-        transformElem(homo, arElem);
+        //arElem.style.display = "block";
+        drawImage();
+        // transformElem(homo, arElem);
         drawCorners(corners)
     }
 
     renderer.setSize(4000, 3000);
     renderer.render(scene, camera);
     console.log("scene rendered");
+}
+
+function drawImage() {
+    displayImageCanvas = document.createElement("canvas");
+    setVideoStyle(displayImageCanvas);
+    displayImageCanvas.id = "displayImage";
+    displayImageCanvas.width = oWidth;
+    displayImageCanvas.height = oHeight;
+    displayImageCanvas.zIndex = 90;
+    let img = document.getElementById("pinball-test");
+    let ctx = displayImageCanvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    document.body.appendChild(displayImageCanvas);
 }
 
 function setVideoStyle(elem) {
