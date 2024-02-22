@@ -50,9 +50,9 @@ var buildCameraProj = function (input_width, input_height, camera, proj) {
 var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
     createOverlayCanvas();
 
-    arElem = document.getElementById("arElem");
+    /*arElem = document.getElementById("arElem");
     arElem.style["transform-origin"] = "top left"; // default is center
-    arElem.style.zIndex = 2;
+    arElem.style.zIndex = 2;*/
     var renderer = new THREE.WebGLRenderer({ canvas: canvasElement, alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -77,8 +77,8 @@ var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
     root.add(sphere);
     buildCameraProj(4000, 3000, camera, cameraMatrix);
     // clearOverlayCtx();
-    arElem.style.display = "none";
-    clearOverlayCtx();
+    // arElem.style.display = "none";
+    //clearOverlayCtx();
 
     if (detected == true) {
         sphere.visible = true;
@@ -101,6 +101,7 @@ function drawImage() {
     displayImageCanvas.width = oWidth;
     displayImageCanvas.height = oHeight;
     displayImageCanvas.zIndex = 90;
+    displayImageCanvas.style.width = "1280px";
     let img = document.getElementById("pinball-test");
     let ctx = displayImageCanvas.getContext('2d', { willReadFrequently: true });
     ctx.drawImage(img, 0, 0, img.width, img.height);
@@ -120,6 +121,7 @@ function createOverlayCanvas() {
     overlayCanvas.width = oWidth;
     overlayCanvas.height = oHeight;
     overlayCanvas.style.zIndex = 100;
+    overlayCanvas.style.width = "1280px";
     document.body.appendChild(overlayCanvas);
 }
 
