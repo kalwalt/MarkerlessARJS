@@ -18,7 +18,7 @@
         <h5 class="text-xl font-medium leading-tight mt-2">Loading</h5>
       </div>
       <div id="canvas-container" class="hidden flex flex-col justify-center items-center">
-        <canvas id="canvas" class="w-[4000px] h-[3000px]" oncontextmenu="event.preventDefault()" tabindex=-1 />
+        <canvas id="canvas" class="w-[1280px] h-[720px]" oncontextmenu="event.preventDefault()" tabindex=-1 style="position:absolute; top: 0px; left:0px; z-index:10"/>
       </div>
       <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
       <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
@@ -81,7 +81,7 @@
       onRuntimeInitialized: function () {
         output("WASM runtime has been initialized.");
         var pipeline;
-        var cc = new Module.CameraCalibration(4000, 3000, 2000, 1500);
+        var cc = new Module.CameraCalibration(4000, 4000, 2000, 1500);
         console.log(cc);
         var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 4000, 3000);
         console.log(projMat);
