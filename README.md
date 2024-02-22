@@ -1,15 +1,20 @@
 # MarkerlessARJS
-Markerless AR based on https://github.com/ahmetozlu/augmented_reality
-Trying to port the C++ code into javascript - WIP.
+Markerless AR based on https://github.com/ahmetozlu/augmented_reality and https://github.com/MasteringOpenCV/code
+This is a project to port the original code to javascript using emscripten.
 
-## Testing infos
+## Example
 
-The original project by Ahmet Özlü was developed in 2017 with OpenCV 2.4.10. I am trying to port part of the code to javascript with the emscripten transpiler.
+A simple example is provided in the *build/lib* folder. Running the example in a http server, you will see in the browser a an image of the pinball image with a blue rectangle around it; look also in the console with some useful information.
+This example bundle in the .html file all the wasm code, if you modify the C++ code or the shell.html file you need to rebuild the whole project with Emscripten.
 
 ## Dependencies
 
-- OpenCV 4.1.0
-- OpenCV_contrib 4.1.0
-- Emscripten
+- OpenCV 4.7.0
+- OpenCV_contrib 4.7.0
+- Emscripten emsdk 3.1.26
 
-I will provide pre-binaries for the OpenCV in a second moment of the development.
+## Next features
+
+- [ ] js library wih all the classes and functions from the project as a separate bundle.
+- [ ] ES6 version of the library.
+- [ ] 3d rendering example witth three.js library.
