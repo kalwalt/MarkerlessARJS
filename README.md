@@ -1,6 +1,11 @@
 # MarkerlessARJS
 Markerless AR based on https://github.com/ahmetozlu/augmented_reality and https://github.com/MasteringOpenCV/code
 This is a project to port the original code to javascript using emscripten.
+These are the classes ported to JavaScript:
+- CameraCalibration
+- ARPipeline
+- Transformation
+- and other useful functions...
 
 ## Example
 
