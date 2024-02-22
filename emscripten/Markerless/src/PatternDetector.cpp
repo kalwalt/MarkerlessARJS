@@ -97,8 +97,9 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
 
     // Get matches with current pattern
     getMatches(m_queryDescriptors, m_matches);
-
-    std::cout << "Num Matches: " << m_matches.size() << std::endl;
+    
+    // uncomment next line to debug
+    // std::cout << "Num Matches: " << m_matches.size() << std::endl;
 
     // Find homography transformation and detect good matches
     bool homographyFound = refineMatchesWithHomography(
@@ -108,7 +109,8 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
         m_matches,
         m_roughHomography);
 
-    std::cout << "Homography found: " << (bool)homographyFound << std::endl;
+    // uncomment next line to debug 
+    // std::cout << "Homography found: " << (bool)homographyFound << std::endl;
 
     if (homographyFound)
     {
@@ -177,7 +179,8 @@ bool PatternDetector::extractFeatures(const cv::Mat& image, std::vector<cv::KeyP
     assert(image.channels() == 1);
 
     m_detector->detect(image, keypoints);
-    std::cout << "Keypoints num: " <<  keypoints.size() << std::endl;
+    // uncomment next line to debug
+    // std::cout << "Keypoints num: " <<  keypoints.size() << std::endl;
     if (keypoints.empty())
         return false;
 
@@ -233,7 +236,8 @@ bool PatternDetector::refineMatchesWithHomography
 {
     const int minNumberMatchesAllowed = 8;
 
-    std::cout << "Number of matches inside refineatchesWithHomography: " << matches.size() << std::endl;
+    // uncomment next line to debug
+    // std::cout << "Number of matches inside refineatchesWithHomography: " << matches.size() << std::endl;
 
     if (matches.size() < minNumberMatchesAllowed)
         return false;
@@ -249,7 +253,8 @@ bool PatternDetector::refineMatchesWithHomography
     }
 
     // Find homography matrix and get inliers mask
-    std::cout << "SrcPoints size: " << srcPoints.size() << std::endl;
+    // uncomment next line to debug
+    // std::cout << "SrcPoints size: " << srcPoints.size() << std::endl;
     std::vector<unsigned char> inliersMask(srcPoints.size());
     homography = cv::findHomography(srcPoints,
                                     dstPoints,
@@ -263,7 +268,8 @@ bool PatternDetector::refineMatchesWithHomography
         if (inliersMask[i])
             inliers.push_back(matches[i]);
     }
-    std::cout << "Num inliers: " << inliers.size() << std::endl;
+    // uncomment next line to debug
+    // std::cout << "Num inliers: " << inliers.size() << std::endl;
     matches.swap(inliers);
     return matches.size() > minNumberMatchesAllowed;
 }
