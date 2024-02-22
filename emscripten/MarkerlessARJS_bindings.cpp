@@ -157,7 +157,7 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
  .constructor<size_t, size_t, const emscripten::val, CameraCalibration>()
  .function("processFrame", &ARPipeline_em::processFrame)
  .function("getPatternMat44", &ARPipeline_em::getPatternMat44)
- .function("getHomography", &ARPipeline_em::getHomography)
+ //.function("getHomography", &ARPipeline_em::getHomography)
  .function("getCorners", &ARPipeline_em::getCorners);
 
   class_<Transformation_em>("Transformation")
