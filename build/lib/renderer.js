@@ -89,7 +89,7 @@ var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
         drawCorners(corners)
     }
 
-    renderer.setSize(4000, 3000);
+    renderer.setSize(1280, 960);
     renderer.render(scene, camera);
     console.log("scene rendered");
 }
