@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.5, maximum-scale=1">
+    <title>MarkerlessARJS.js basic example</title>
+    <style>
+        #video {
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 220;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
+    <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
+    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; width:1280; z-index:120">
+        <video loop autoplay muted playsinline id="video"></video>
+
+        <script src="../build/lib/MarkerlessARJS.js"></script>
+        <script src="../data/three.min.js"></script>
+        <script src="../build/lib/renderer.js"></script>
+        <script src="initCamera.js"></script>
+        <script>
+            var canvasElement = document.getElementById('canvas');
+            var context_process = canvasElement.getContext('2d');
+            var pipeline;
+
+            Module.onRuntimeInitialized = async function () {
+
+
+                initCamera()
+                    .then(video =>
+                    // start camera playback
+                    {
+                        var sourceVideo = video;
+                        sourceVideo.width = 640;
+                        sourceVideo.height = 480;
+                        sourceVideo.play();
+                        console.log(sourceVideo);
+                        return new Promise(resolve => {
+                            sourceVideo.addEventListener("loadeddata", event => {
+                                console.log("Camera is ready");
+                                resolve();
+                            });
+                        });
+
+                    }
+                    )
+                    .then(_ => {
+                        console.log(video);
+                        //var pipeline;
+                        var cc = new Module.CameraCalibration(4000, 3000, 2000, 1500);
+                        console.log(cc);
+                        var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 4000, 3000);
+                        console.log(projMat);
+                        var pinball_buff = imread('pinball');
+                        pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
+                        console.log(pipeline);
+                        process()
+                        var h = [];
+                        console.log(h);
+                        var corners = pipeline.getCorners();
+                        console.log(corners);
+                    }
+                    );
+
+            }
+
+            var imread = function (imageSource) {
+                var img = null;
+                if (typeof imageSource === 'string') {
+                    img = document.getElementById(imageSource);
+                } else {
+                    img = imageSource;
+                }
+                var canvas = null;
+                var ctx = null;
+                if (img instanceof HTMLImageElement) {
+                    canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                } else if (img instanceof HTMLCanvasElement || img instanceof OffscreenCanvas) {
+                    canvas = img;
+                    ctx = canvas.getContext('2d');
+                } else {
+                    throw new Error('Please input the valid canvas or img id.');
+                    return;
+                }
+
+                var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                return imgData.data;
+            };
+
+            var process = function () {
+                var w = 640;
+                var h = 480;
+                context_process.fillStyle = 'black';
+                context_process.fillRect(0, 0, w, h);
+                context_process.drawImage(video, 0, 0);
+                var imageData = context_process.getImageData(0, 0, w, h);
+                if (!imageData) return;
+                var ok = pipeline.processFrame(imageData.data, 640, 480);
+                console.log(ok);
+                var loc = pipeline.getPatternMat44();
+                console.log(loc);
+                var corners = pipeline.getCorners();
+                console.log(corners);
+                requestAnimationFrame(process);
+            }
+        </script>
+
+
+</body>
+
+</html>
