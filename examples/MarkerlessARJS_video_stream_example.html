@@ -10,7 +10,6 @@
             position: absolute;
             top: 0;
             left: 0;
-
             display: block;
             width: 100% !important;
             height: 100% !important;
@@ -32,7 +31,7 @@
         <script src="initCamera.js"></script>
         <script>
             var canvasElement = document.getElementById('canvas');
-            var context_process = canvasElement.getContext('2d');
+            var context_process = canvasElement.getContext('2d', { willReadFrequently: true });
             var pipeline;
 
             Module.onRuntimeInitialized = async function () {
@@ -58,19 +57,27 @@
                     )
                     .then(_ => {
                         console.log(video);
-                        //var pipeline;
-                        var cc = new Module.CameraCalibration(4000, 3000, 2000, 1500);
-                        console.log(cc);
-                        var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 4000, 3000);
-                        console.log(projMat);
+
+                        var worker = new Worker('worker.js');
+
+                        worker.onmessage = function (e) {
+                            var msg = e.data;
+                            if (msg.type == "pattern_found") {
+                                console.log(JSON.parse(msg.matrix));
+                            }
+
+                        }
+
                         var pinball_buff = imread('pinball');
-                        pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
-                        console.log(pipeline);
-                        process()
-                        var h = [];
-                        console.log(h);
-                        var corners = pipeline.getCorners();
-                        console.log(corners);
+
+                        worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
+
+                        function update() {
+                            worker.postMessage({ type: "video_data", data: process() });
+                            requestAnimationFrame(update);
+                        }
+
+                        update();
                     }
                     );
 
@@ -111,13 +118,7 @@
                 context_process.drawImage(video, 0, 0);
                 var imageData = context_process.getImageData(0, 0, w, h);
                 if (!imageData) return;
-                var ok = pipeline.processFrame(imageData.data, 640, 480);
-                console.log(ok);
-                var loc = pipeline.getPatternMat44();
-                console.log(loc);
-                var corners = pipeline.getCorners();
-                console.log(corners);
-                requestAnimationFrame(process);
+                return imageData.data
             }
         </script>
 
