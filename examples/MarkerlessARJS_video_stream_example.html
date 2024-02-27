@@ -14,7 +14,7 @@
             width: 100% !important;
             height: 100% !important;
             object-fit: cover;
-            z-index: 220;
+            z-index: 20;
         }
     </style>
 </head>
@@ -22,19 +22,23 @@
 <body>
     <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
     <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
-    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; width:1280; z-index:120">
+    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; width:1280px; z-index:80">
         <video loop autoplay muted playsinline id="video"></video>
 
         <script src="../build/lib/MarkerlessARJS.js"></script>
         <script src="../data/three.min.js"></script>
-        <script src="../build/lib/renderer.js"></script>
+        <!--<script src="../build/lib/renderer.js"></script>-->
         <script src="initCamera.js"></script>
         <script>
             var canvasElement = document.getElementById('canvas');
             var context_process = canvasElement.getContext('2d', { willReadFrequently: true });
             var pipeline;
+            var oWidth = 640;
+            var oHeight = 480;
 
             Module.onRuntimeInitialized = async function () {
+
+                createOverlayCanvas();
 
 
                 initCamera()
@@ -64,6 +68,8 @@
                             var msg = e.data;
                             if (msg.type == "pattern_found") {
                                 console.log(JSON.parse(msg.matrix));
+                                console.log(msg.corners);
+                                drawCorners(msg.corners)
                             }
 
                         }
@@ -120,6 +126,47 @@
                 if (!imageData) return;
                 return imageData.data
             }
+
+            function setVideoStyle(elem) {
+                elem.style.position = "absolute";
+                elem.style.top = 0;
+                elem.style.left = 0;
+            }
+
+            function createOverlayCanvas() {
+                overlayCanvas = document.createElement("canvas");
+                setVideoStyle(overlayCanvas);
+                overlayCanvas.id = "overlay";
+                overlayCanvas.width = oWidth;
+                overlayCanvas.height = oHeight;
+                overlayCanvas.style.zIndex = 100;
+                overlayCanvas.style.width = "1280px";
+                document.body.appendChild(overlayCanvas);
+            }
+
+            function clearOverlayCtx() {
+                const overlayCtx = overlayCanvas.getContext("2d");
+                overlayCtx.clearRect(0, 0, oWidth, oHeight);
+            }
+
+            function drawCorners(corners) {
+                const overlayCtx = overlayCanvas.getContext("2d");
+                clearOverlayCtx();
+
+                overlayCtx.beginPath();
+                overlayCtx.strokeStyle = "blue";
+                overlayCtx.lineWidth = 8;
+
+                // [x1,y1,x2,y2,x3,y3,x4,y4]
+                overlayCtx.moveTo(corners[0][0], corners[0][1]);
+                overlayCtx.lineTo(corners[1][0], corners[1][1]);
+                overlayCtx.lineTo(corners[2][0], corners[2][1]);
+                overlayCtx.lineTo(corners[3][0], corners[3][1]);
+                overlayCtx.lineTo(corners[0][0], corners[0][1]);
+
+                overlayCtx.stroke();
+            }
+
         </script>
 
 
