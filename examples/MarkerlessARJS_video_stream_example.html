@@ -11,8 +11,8 @@
             top: 0;
             left: 0;
             display: block;
-            width: 100% !important;
-            height: 100% !important;
+            /*width: 100% !important;
+            height: 100% !important;*/
             object-fit: cover;
             z-index: 20;
         }
@@ -21,13 +21,13 @@
 
 <body>
     <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
-    <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
-    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; width:1280px; z-index:80">
+    <!--<img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />-->
+    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; z-index:80"></canvas>
         <video loop autoplay muted playsinline id="video"></video>
 
         <script src="../build/lib/MarkerlessARJS.js"></script>
-        <script src="../data/three.min.js"></script>
-        <!--<script src="../build/lib/renderer.js"></script>-->
+        <!--<script src="../data/three.min.js"></script>
+        <script src="../build/lib/renderer.js"></script>-->
         <script src="initCamera.js"></script>
         <script>
             var canvasElement = document.getElementById('canvas');
@@ -40,14 +40,13 @@
 
                 createOverlayCanvas();
 
-
                 initCamera()
                     .then(video =>
                     // start camera playback
                     {
                         var sourceVideo = video;
-                        sourceVideo.width = 640;
-                        sourceVideo.height = 480;
+                        sourceVideo.width = oWidth;
+                        sourceVideo.height = oHeight;
                         sourceVideo.play();
                         console.log(sourceVideo);
                         return new Promise(resolve => {
@@ -68,18 +67,20 @@
                             var msg = e.data;
                             if (msg.type == "pattern_found") {
                                 console.log(JSON.parse(msg.matrix));
-                                console.log(msg.corners);
-                                drawCorners(msg.corners)
+                               let c = JSON.parse(msg.corners);
+                               drawCorners(c)
                             }
 
                         }
+
+                        //drawGreenPoint();
 
                         var pinball_buff = imread('pinball');
 
                         worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
 
                         function update() {
-                            worker.postMessage({ type: "video_data", data: process() });
+                            worker.postMessage({ type: "video_data", data: process() , videoWidth: oWidth, videoHeight: oHeight});
                             requestAnimationFrame(update);
                         }
 
@@ -117,8 +118,8 @@
             };
 
             var process = function () {
-                var w = 640;
-                var h = 480;
+                var w = oWidth;
+                var h = oHeight;
                 context_process.fillStyle = 'black';
                 context_process.fillRect(0, 0, w, h);
                 context_process.drawImage(video, 0, 0);
@@ -140,7 +141,7 @@
                 overlayCanvas.width = oWidth;
                 overlayCanvas.height = oHeight;
                 overlayCanvas.style.zIndex = 100;
-                overlayCanvas.style.width = "1280px";
+                //overlayCanvas.style.width = "1280px";
                 document.body.appendChild(overlayCanvas);
             }
 
@@ -155,8 +156,7 @@
 
                 overlayCtx.beginPath();
                 overlayCtx.strokeStyle = "blue";
-                overlayCtx.lineWidth = 8;
-
+                overlayCtx.lineWidth = 3;
                 // [x1,y1,x2,y2,x3,y3,x4,y4]
                 overlayCtx.moveTo(corners[0][0], corners[0][1]);
                 overlayCtx.lineTo(corners[1][0], corners[1][1]);
