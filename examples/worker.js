@@ -5,7 +5,7 @@ var stream, loc, corners, videoWidth, videoHeight;
 
 // Create a new instance of the MarkerlessARJS class
 Module.onRuntimeInitialized = async function () {
-    var cc = new Module.CameraCalibration(640, 480, 320, 240);
+    var cc = new Module.CameraCalibration(1280, 720, 640, 360);
     console.log(cc);
     var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 640, 480);
     console.log(projMat);

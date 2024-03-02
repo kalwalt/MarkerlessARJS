@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.5, maximum-scale=1">
-    <title>MarkerlessARJS.js basic example</title>
+    <title>MarkerlessARJS.js video stream example</title>
     <style>
         #video {
             position: absolute;
             top: 0;
             left: 0;
             display: block;
-            /*width: 100% !important;
-            height: 100% !important;*/
+            width: 100% !important;
+            height: 100% !important;
             object-fit: cover;
             z-index: 20;
         }
@@ -22,7 +22,7 @@
 <body>
     <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
     <!--<img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />-->
-    <canvas id="canvas" width="640" height="480" style="position:absolute; top:0; left:0; z-index:80"></canvas>
+    <canvas id="canvas" width="1280" height="720" style="position:absolute; top:0; left:0; width: 100% !important; height: 100% !important;z-index:80"></canvas>
         <video loop autoplay muted playsinline id="video"></video>
 
         <script src="../build/lib/MarkerlessARJS.js"></script>
@@ -33,14 +33,14 @@
             var canvasElement = document.getElementById('canvas');
             var context_process = canvasElement.getContext('2d', { willReadFrequently: true });
             var pipeline;
-            var oWidth = 640;
-            var oHeight = 480;
+            var oWidth = 1280;
+            var oHeight = 720;
 
             Module.onRuntimeInitialized = async function () {
 
                 createOverlayCanvas();
 
-                initCamera()
+                initCamera(oWidth, oHeight)
                     .then(video =>
                     // start camera playback
                     {
@@ -70,10 +70,9 @@
                                let c = JSON.parse(msg.corners);
                                drawCorners(c)
                             }
+                            process();
 
                         }
-
-                        //drawGreenPoint();
 
                         var pinball_buff = imread('pinball');
 
@@ -84,7 +83,7 @@
                             requestAnimationFrame(update);
                         }
 
-                        update();
+                       update();
                     }
                     );
 
