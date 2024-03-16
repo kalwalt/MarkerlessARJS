@@ -9,6 +9,9 @@ Module.onRuntimeInitialized = async function () {
     console.log(cc);
     var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 640, 480);
     console.log(projMat);
+    if(projMat) {
+        self.postMessage({type: "projection_matrix", projMat: JSON.stringify(projMat)});
+    }
     var pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
     console.log(pipeline);
     function update() {
