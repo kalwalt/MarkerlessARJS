@@ -21,6 +21,8 @@ Module.onRuntimeInitialized = async function () {
         corners = pipeline.getCorners();
         if(ok) {
             self.postMessage({ type: "pattern_found", matrix: JSON.stringify(loc), corners: JSON.stringify(corners) });
+        } else {
+            self.postMessage({ type: "pattern_lost" });
         }
         self.requestAnimationFrame(update);
 

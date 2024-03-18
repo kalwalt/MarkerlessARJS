@@ -5,30 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.5, maximum-scale=1">
     <title>MarkerlessARJS.js video stream example</title>
-    <style>
-        #video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            z-index: 20;
-        }
-    </style>
+    <link rel="stylesheet" href="css/nft-style.css">
 </head>
 
 <body>
     <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
     <!--<img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />-->
-    <canvas id="canvas" width="1280" height="720"
+    <!--<canvas id="canvas"
+        style="position:absolute; top:0; left:0; width: 100% !important; height: 100% !important;z-index:80"></canvas>-->
+   <!-- <canvas id="targetCanvas" width="1280" height="720"
         style="position:absolute; top:0; left:0; width: 100% !important; height: 100% !important;z-index:80"></canvas>
-    <canvas id="targetCanvas" width="1280" height="720"
-        style="position:absolute; top:0; left:0; width: 100% !important; height: 100% !important;z-index:80"></canvas>
-    <video loop autoplay muted playsinline id="video"></video>
-
-    <script src="../build/lib/MarkerlessARJS.js"></script>
+-->
+    <div id="app">
+        <video
+                loop
+                autoplay
+                muted
+                playsinline
+                id="video">
+        </video>
+        <canvas id="canvas"></canvas>
+    </div>
     <script src="../data/three.min.js"></script>
     <!--<script src="../build/lib/renderer.js"></script>-->
     <script src="initCamera.js"></script>
@@ -47,11 +44,16 @@
         function isMobile() {
             return /Android|mobile|iPad|iPhone/i.test(navigator.userAgent);
         }
-        var canvasElement = document.getElementById('canvas');
-        var context_process = canvasElement.getContext('2d', { willReadFrequently: true });
+
+        var canvas_process = document.createElement('canvas');
+        var context_process = canvas_process.getContext('2d', { willReadFrequently: true });
+
+        var targetCanvas = document.querySelector("#canvas");
         var pipeline;
-        var oWidth = 1280;
-        var oHeight = 720;
+        /*var oWidth = 1280;
+        var oHeight = 720;*/
+        var oWidth = 640;
+        var oHeight = 480;
 
         var vw, vh;
         var sw, sh;
@@ -72,10 +74,15 @@
         h = vh * pscale;
         pw = Math.max(w, h / 3 * 4);
         ph = Math.max(h, w / 4 * 3);
+        ox = (pw - w) / 2;
+        oy = (ph - h) / 2;
+        canvas_process.style.clientWidth = pw + "px";
+        canvas_process.style.clientHeight = ph + "px";
+        canvas_process.width = pw;
+        canvas_process.height = ph;
 
-        Module.onRuntimeInitialized = async function () {
 
-            createOverlayCanvas();
+            //createOverlayCanvas();
 
             initCamera(oWidth, oHeight)
                 .then(video =>
@@ -97,7 +104,7 @@
                 )
                 .then(_ => {
                     console.log(video);
-                    const targetCanvas = document.getElementById('targetCanvas');
+                    //const targetCanvas = document.getElementById('targetCanvas');
 
                     const renderer = new THREE.WebGLRenderer({ canvas: targetCanvas, alpha: true, antialias: true });
                     renderer.setPixelRatio(window.devicePixelRatio);
@@ -124,8 +131,11 @@
 
                     root.matrixAutoUpdate = false;
                     root.add(sphere);
-
-                    renderer.setSize(oWidth, oHeight);
+                    var rendWidth = window.innerWidth;
+                    var rendHeight = window.innerHeight;
+                    //renderer.setSize(rendWidth, rendHeight);
+                        //
+                        renderer.setSize(sw, sh);
 
                     var worker = new Worker('worker.js');
 
@@ -148,13 +158,16 @@
                         if (msg.type == "pattern_found") {
                             let world = JSON.parse(msg.matrix);
                             let c = JSON.parse(msg.corners);
-                            drawCorners(c);
+                            //drawCorners(c);
                             if (!world) {
                                 sphere.visible = false;
                            } else {
                                 sphere.visible = true;
                                 setMatrix(root.matrix, world);                   
                            }
+                        }
+                        if (msg.type == "pattern_lost") {
+                            sphere.visible = false;
                         }
                     }
 
@@ -171,8 +184,6 @@
                     update();
                 }
                 );
-
-        }
 
         var imread = function (imageSource) {
             var img = null;
@@ -202,12 +213,15 @@
         };
 
         var process = function () {
-            var w = oWidth;
-            var h = oHeight;
+            /*var w = oWidth;
+            var h = oHeight;*/
+            var w = window.innerWidth;
+            var h = window.innerHeight;
             context_process.fillStyle = 'black';
-            context_process.fillRect(0, 0, w, h);
-            context_process.drawImage(video, 0, 0);
-            var imageData = context_process.getImageData(0, 0, w, h);
+            context_process.fillRect(0, 0, pw, ph);
+            context_process.drawImage(video, 0, 0, vw, vh, ox, oy, w, h);
+
+            var imageData = context_process.getImageData(0, 0, pw, ph);
             if (!imageData) return;
             return imageData.data
         }
