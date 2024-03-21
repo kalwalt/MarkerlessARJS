@@ -15,8 +15,14 @@ Module.onRuntimeInitialized = async function () {
     var pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
     console.log(pipeline);
     function update() {
-        var ok = pipeline.processFrame(stream, videoWidth, videoHeight);
-        console.log(ok);
+        var ok;
+        if (pipeline && pipeline.processFrame) {    
+            console.log(stream);
+            ok = pipeline.processFrame(stream, 320, 240);
+            console.log(ok);
+        }
+        //var ok = pipeline.processFrame(stream, videoWidth, videoHeight);
+        //console.log(ok);
         loc = pipeline.getPatternMat44();
         corners = pipeline.getCorners();
         if(ok) {
@@ -24,10 +30,10 @@ Module.onRuntimeInitialized = async function () {
         } else {
             self.postMessage({ type: "pattern_lost" });
         }
-        self.requestAnimationFrame(update);
+       // self.requestAnimationFrame(update);
 
     }
-    update();
+   update();
 }
 
 self.onmessage = function (ev) {

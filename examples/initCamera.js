@@ -25,3 +25,11 @@ async function initCamera(width, height) {
         };
     });
 };
+
+function initTargetCanvas() {
+    // target canvas should overlap source video
+    targetCanvas = document.querySelector("#canvas");
+    targetCanvas.width = sourceVideo.width;
+    targetCanvas.height = sourceVideo.height;
+  }
+  
