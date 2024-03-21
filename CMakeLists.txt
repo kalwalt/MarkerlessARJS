@@ -45,14 +45,15 @@ add_subdirectory(emscripten/Markerless)
 add_definitions("-std=c++17")
 
 set(HTML_LIB true)
+set(ES6_FLAG " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
 
-macro(ADD_LIB app)
+macro(ADD_LIB app ES6)
 
-  add_executable(MarkerlessARJS
+  add_executable(${app}
                  ${PROJECT_SOURCE_DIR}/emscripten/MarkerlessARJS_bindings.cpp)
 
   target_include_directories(
-    MarkerlessARJS
+    ${app}
     PRIVATE
       "${PROJECT_SOURCE_DIR}/emscripten/Markerless/include"
       # "${PROJECT_SOURCE_DIR}/emscripten/Markerless/stb_image"
@@ -70,7 +71,7 @@ macro(ADD_LIB app)
   )
 
   target_link_libraries(
-    MarkerlessARJS
+    ${app}
     MARKERLESS
     "${build_opencv_SOURCE_DIR}/lib/libopencv_calib3d.a"
     "${build_opencv_SOURCE_DIR}/lib/libopencv_features2d.a"
@@ -98,30 +99,34 @@ macro(ADD_LIB app)
     # ")
   endif()
 
+  if(${ES6} STREQUAL "false")
+    set(ES6_FLAG "")
+  endif()
+
   set(WASM "-s WASM=1")
   set(SINGLE_FILE " -s SINGLE_FILE=1 ")
-  if(${HTML_LIB} EQUAL 1) 
+  if(${HTML_LIB} EQUAL 1)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
   else()
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
   endif()
-  if(${HTML_LIB} EQUAL 1) 
-  set_target_properties(
-    MarkerlessARJS
-    PROPERTIES
-      LINK_FLAGS
-      "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html"
-  )
+  if(${HTML_LIB} EQUAL 1)
+    set_target_properties(
+      ${app}
+      PROPERTIES
+        LINK_FLAGS
+        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html"
+    )
   else()
-  set_target_properties(
-    MarkerlessARJS
-    PROPERTIES
-      LINK_FLAGS
-      "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
-  )
+    set_target_properties(
+      ${app}
+      PROPERTIES
+        LINK_FLAGS
+        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
+    )
   endif()
 
 endmacro()
 
-add_lib(MarkerlessARJS)
-
+add_lib(MarkerlessARJS "false")
+add_lib(MarkerlessARJS_ES6 "true")
