@@ -78,12 +78,15 @@ function start(video, input_width, input_height, render_update, track_update) {
     renderer.setSize(sw, sh);
 
     worker = new Worker('./worker.js', {type: 'module'})
-    //worker = new Worker('./worker.js', )
 
-    //worker.postMessage({ type: "load", pw: pw, ph: ph, camera_para: camera_para, marker: markerUrl });
     var pinball_buff = imread('pinball');
 
-    worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
+    if (pinball_buff) {
+      console.log(pinball_buff)
+      worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
+    }
+
+    //worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
 
     worker.onmessage = function (ev) {
       var msg = ev.data;
