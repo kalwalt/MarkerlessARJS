@@ -128,5 +128,5 @@ macro(ADD_LIB app ES6)
 
 endmacro()
 
-add_lib(MarkerlessARJS "false")
-add_lib(MarkerlessARJS_ES6 "true")
+add_lib(MarkerlessARJS 0)
+add_lib(MarkerlessARJS_ES6 1)
