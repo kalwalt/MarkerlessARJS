@@ -1,19 +1,39 @@
-importScripts("../build/lib/MarkerlessARJS.js");
+//importScripts("../build/lib/MarkerlessARJS.js");
+import Module from "../build/lib/MarkerlessARJS_ES6.js"
+
+const markerless = await Module();
 
 var pinball_buff;
 var stream, loc, corners, videoWidth, videoHeight;
 
+self.onmessage = function (ev) {
+    var msg = ev.data;
+    if (msg.type === "pinball") {
+        pinball_buff = msg.buff;
+    }
+    if (msg.type === "video_data") {
+        stream = msg.data;
+        videoWidth = msg.videoWidth;
+        videoHeight = msg.videoHeight;
+    }
+}
+
 // Create a new instance of the MarkerlessARJS class
-Module.onRuntimeInitialized = async function () {
-    var cc = new Module.CameraCalibration(1280, 720, 640, 360);
+//Module.onRuntimeInitialized = async function () {
+    var cc = new markerless.CameraCalibration(1280, 720, 640, 360);
     console.log(cc);
-    var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 640, 480);
+    var projMat = markerless.buildProjectionMatrix(cc, 0.01, 1000.0, 640, 480);
     console.log(projMat);
     if(projMat) {
         self.postMessage({type: "projection_matrix", projMat: JSON.stringify(projMat)});
     }
-    var pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
-    console.log(pipeline);
+    var pipeline;
+    if(pinball_buff) {
+        pipeline = new markerless.ARPipeline(1637, 2048, pinball_buff, cc);
+        console.log(pipeline);
+        update()
+    }
+
     function update() {
         var ok;
         if (pipeline && pipeline.processFrame) {    
@@ -33,10 +53,10 @@ Module.onRuntimeInitialized = async function () {
        // self.requestAnimationFrame(update);
 
     }
-   update();
-}
+   //update();
+//}// onRuntimeinit
 
-self.onmessage = function (ev) {
+/*self.onmessage = function (ev) {
     var msg = ev.data;
     if (msg.type === "pinball") {
         pinball_buff = msg.buff;
@@ -46,4 +66,4 @@ self.onmessage = function (ev) {
         videoWidth = msg.videoWidth;
         videoHeight = msg.videoHeight;
     }
-}
+}*/

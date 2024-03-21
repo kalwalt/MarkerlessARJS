@@ -77,7 +77,8 @@ function start(video, input_width, input_height, render_update, track_update) {
 
     renderer.setSize(sw, sh);
 
-    worker = new Worker('./worker.js')
+    worker = new Worker('./worker.js', {type: 'module'})
+    //worker = new Worker('./worker.js', )
 
     //worker.postMessage({ type: "load", pw: pw, ph: ph, camera_para: camera_para, marker: markerUrl });
     var pinball_buff = imread('pinball');
