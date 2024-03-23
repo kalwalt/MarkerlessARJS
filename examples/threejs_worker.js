@@ -22,7 +22,6 @@ function start(video, input_width, input_height, render_update, track_update) {
   var pw, ph;
   var ox, oy;
   var worker;
-  var camera_para = './../examples/Data/camera_para.dat'
 
   var canvas_process = document.createElement('canvas');
   var context_process = canvas_process.getContext('2d', { willReadFrequently: true });
@@ -90,7 +89,6 @@ function start(video, input_width, input_height, render_update, track_update) {
       console.error(e);
     }
     
-    //worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
 
     worker.onmessage = function (ev) {
       var msg = ev.data;
@@ -161,8 +159,6 @@ function start(video, input_width, input_height, render_update, track_update) {
       sphere.visible = false;
     } else {
       sphere.visible = true;
-      //sphere.position.y = ((marker.height / marker.dpi) * 2.54 * 10) / 2.0;
-      //sphere.position.x = ((marker.width / marker.dpi) * 2.54 * 10) / 2.0;
       // set matrix of 'root' by detected 'world' matrix
       setMatrix(root.matrix, world);
     }
@@ -175,7 +171,6 @@ function start(video, input_width, input_height, render_update, track_update) {
     context_process.drawImage(video, 0, 0, vw, vh, ox, oy, w, h);
 
     var imageData = context_process.getImageData(0, 0, pw, ph);
-    //worker.postMessage({ type: 'process', imagedata: imageData }, [imageData.data.buffer]);
     worker.postMessage({ type: "video_data", data: imageData, videoWidth: input_width, videoHeight: input_height }, [imageData.data.buffer]);
     requestAnimationFrame(process);
   }
