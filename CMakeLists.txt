@@ -45,7 +45,6 @@ add_subdirectory(emscripten/Markerless)
 add_definitions("-std=c++17")
 
 set(HTML_LIB true)
-set(ES6_FLAG " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
 
 macro(ADD_LIB app ES6)
 
@@ -99,8 +98,10 @@ macro(ADD_LIB app ES6)
     # ")
   endif()
 
-  if(${ES6} STREQUAL "false")
-    set(ES6_FLAG "")
+  if(${ES6} STREQUAL 0)
+    set(ES6_FLAG " ")
+    else()
+    set(ES6_FLAG " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
   endif()
 
   set(WASM "-s WASM=1")
