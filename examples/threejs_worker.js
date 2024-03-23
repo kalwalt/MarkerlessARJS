@@ -49,7 +49,7 @@ function start(video, input_width, input_height, render_update, track_update) {
   var marker;
 
   sphere.material.flatShading;
-  sphere.scale.set(200, 200, 200);
+  sphere.scale.set(.5, .5, .5);
 
   root.matrixAutoUpdate = false;
   root.add(sphere);
@@ -77,15 +77,19 @@ function start(video, input_width, input_height, render_update, track_update) {
 
     renderer.setSize(sw, sh);
 
-    worker = new Worker('./worker.js', {type: 'module'})
+    worker = new Worker('./worker.js')
 
     var pinball_buff = imread('pinball');
 
     if (pinball_buff) {
-      console.log(pinball_buff)
-      worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
+      console.log("pinball_buff: ", pinball_buff)
+      worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 }, [pinball_buff.buffer]);
     }
 
+    worker.onerror = function(e) {
+      console.error(e);
+    }
+    
     //worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 });
 
     worker.onmessage = function (ev) {
@@ -127,9 +131,6 @@ function start(video, input_width, input_height, render_update, track_update) {
           found(null);
           break;
         }
-        case 'markerInfos': {
-          marker = msg.marker;
-        }
       }
       track_update();
      // process();
@@ -142,7 +143,7 @@ function start(video, input_width, input_height, render_update, track_update) {
     if (!msg) {
       world = null;
     } else {
-      world = JSON.parse(msg.matrixGL_RH);
+      world = JSON.parse(msg.matrix);
     }
   };
 
@@ -207,6 +208,7 @@ function start(video, input_width, input_height, render_update, track_update) {
     }
 
     var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (!imgData) return;
     return imgData.data;
 };
 
