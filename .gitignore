@@ -5,4 +5,6 @@ emscripten/depends/build_opencv-em/
 emscripten/depends/build_opencv-em-4.1/
 build-em
 build_em
+cmake-build-debug
 libjpeg
+node_modules
