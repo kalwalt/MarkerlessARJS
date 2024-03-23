@@ -6,3 +6,5 @@ docker exec emscripten-markerlessarjs emcmake cmake -B build_em -S ./ -DEMSCRIPT
 docker exec emscripten-markerlessarjs emmake make -C build_em
 
 cp build_em/MarkerlessARJS.html build/lib
+cp build_em/MarkerlessARJS.js build/lib
+cp build_em/MarkerlessARJS_ES6.js build/lib
