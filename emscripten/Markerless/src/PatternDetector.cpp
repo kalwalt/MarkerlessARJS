@@ -99,7 +99,7 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
     getMatches(m_queryDescriptors, m_matches);
     
     // uncomment next line to debug
-    // std::cout << "Num Matches: " << m_matches.size() << std::endl;
+    std::cout << "Num Matches: " << m_matches.size() << std::endl;
 
     // Find homography transformation and detect good matches
     bool homographyFound = refineMatchesWithHomography(
@@ -110,7 +110,7 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
         m_roughHomography);
 
     // uncomment next line to debug 
-    // std::cout << "Homography found: " << (bool)homographyFound << std::endl;
+    std::cout << "Homography found: " << (bool)homographyFound << std::endl;
 
     if (homographyFound)
     {
@@ -130,6 +130,8 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
             // Match with pattern
             getMatches(m_queryDescriptors, refinedMatches);
 
+            std::cout << "Num Matches(refined): " << refinedMatches.size() << std::endl;
+
             // Estimate new refinement homography
             homographyFound = refineMatchesWithHomography(
                 warpedKeypoints,
@@ -137,6 +139,7 @@ bool PatternDetector::findPattern(const cv::Mat& image, PatternTrackingInfo& inf
                 homographyReprojectionThreshold,
                 refinedMatches,
                 m_refinedHomography);
+            std::cout << "Homography found(refined): " << (bool)homographyFound << std::endl;
 
             // Get a result homography as result of matrix product of refined and rough homographies:
             info.homography = m_roughHomography * m_refinedHomography;
