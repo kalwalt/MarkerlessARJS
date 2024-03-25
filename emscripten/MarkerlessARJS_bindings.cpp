@@ -99,6 +99,10 @@ public:
     return cornersArray;
   }
 
+  void refineHomography(bool value) {
+    m_pipeline.m_patternDetector.enableHomographyRefinement = value;
+  }
+
   ARPipeline m_pipeline;
 };
 
@@ -158,7 +162,8 @@ EMSCRIPTEN_BINDINGS(constant_bindings) {
  .function("processFrame", &ARPipeline_em::processFrame)
  .function("getPatternMat44", &ARPipeline_em::getPatternMat44)
  //.function("getHomography", &ARPipeline_em::getHomography)
- .function("getCorners", &ARPipeline_em::getCorners);
+ .function("getCorners", &ARPipeline_em::getCorners)
+ .function("refineHomography", &ARPipeline_em::refineHomography);
 
   class_<Transformation_em>("Transformation")
   .constructor<>()

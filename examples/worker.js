@@ -35,9 +35,9 @@ function initTracker(buff) {
     function onLoad(m) {
         markerless = m;
         console.log('Starting the pipeline setup...');
-        cc = new m.CameraCalibration(640, 480, 320, 240);
+        cc = new m.CameraCalibration(320, 240, 160, 120);
         console.log(cc);
-        projMat = m.buildProjectionMatrix(cc, 0.01, 1000.0, 640, 480);
+        projMat = m.buildProjectionMatrix(cc, 0.01, 1000.0, 320, 240);
         console.log(projMat);
         if(projMat) {
             self.postMessage({type: "projection_matrix", projMat: JSON.stringify(projMat)});
@@ -45,6 +45,7 @@ function initTracker(buff) {
         console.log('loading the pinball image...');
         if(buff) {
             pipeline = new m.ARPipeline(1637, 2048, buff, cc);
+            pipeline.refineHomography(true);
             console.log(pipeline);
         }
     }
