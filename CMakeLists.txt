@@ -22,13 +22,13 @@ if(${EMSCRIPTEN_COMP} EQUAL 1)
     "Fetching opencv for emscripten compilation from webarkit/opencv-em ...")
   FetchContent_Declare(
     build_opencv
-    URL https://github.com/webarkit/opencv-em/releases/download/0.1.3/opencv-js-4.7.0-emcc-3.1.26.zip
+    URL https://github.com/webarkit/opencv-em/releases/download/0.1.5/opencv-js-4.7.0-emcc-3.1.26-simd.zip
   )
 else()
   message("Fetching opencv from webarkit/opencv-em ...")
   FetchContent_Declare(
     build_opencv
-    URL https://github.com/webarkit/opencv-em/releases/download/0.1.3/opencv-4.7.0.zip
+    URL https://github.com/webarkit/opencv-em/releases/download/0.1.5/opencv-4.7.0.zip
   )
 endif()
 
@@ -86,6 +86,7 @@ macro(ADD_LIB app ES6)
   # set(EXPORTED_RUNTIME_FUNCTIONS "'ccall', 'cwrap', 'FS', 'setValue'")
   set(MEM 16777216) # This is default value
   set(MEMORY "-s TOTAL_MEMORY=${MEM} -s ALLOW_MEMORY_GROWTH=1 ")
+  set(SIMD " -msimd128 ")
 
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # https://github.com/kripken/emscripten/blob/master/src/settings.js#L85
@@ -116,14 +117,14 @@ macro(ADD_LIB app ES6)
       ${app}
       PROPERTIES
         LINK_FLAGS
-        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html"
+        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SIMD} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html"
     )
   else()
     set_target_properties(
       ${app}
       PROPERTIES
         LINK_FLAGS
-        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
+        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SIMD} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
     )
   endif()
 
