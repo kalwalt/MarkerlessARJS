@@ -1,6 +1,6 @@
 {
   "name": "markerlessarjs",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Markerless AR based on https://github.com/ahmetozlu/augmented_reality and https://github.com/MasteringOpenCV/code This is a project to port the original code to javascript using emscripten. These are the classes ported to JavaScript: - CameraCalibration - ARPipeline - Transformation - and other useful functions...",
   "main": "dist/markerlessAR.js",
   "scripts": {
