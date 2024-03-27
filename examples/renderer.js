@@ -47,7 +47,7 @@ var buildCameraProj = function (input_width, input_height, camera, proj) {
 
     setMatrix(camera.projectionMatrix, proj);
 }
-var renderThreeJS = function (detected, cameraMatrix, matrix, homo, corners) {
+var renderThreeJS = function (detected, cameraMatrix, matrix, corners) {
     createOverlayCanvas();
 
     /*arElem = document.getElementById("arElem");

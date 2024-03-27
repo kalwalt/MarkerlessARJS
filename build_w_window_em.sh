@@ -4,7 +4,8 @@
 
 cd build_em
 
-emcmake cmake -G "Ninja" -DEMSCRIPTEN_COMP=1 -DHTML_LIB=0 -DCMAKE_BUILD_TYPE=Release ..
+emcmake cmake -G "Ninja" -DEMSCRIPTEN_COMP=1 -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 
-copy MarkerlessARJS.html ../build/lib
+copy MarkerlessARJS.js ..\build\lib
+copy MarkerlessARJS_ES6.js ..\build\lib

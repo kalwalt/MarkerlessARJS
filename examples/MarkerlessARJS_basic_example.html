@@ -13,7 +13,7 @@
     <canvas id="canvas" style="position:absolute; top:0; left:0; width:1280; z-index:120">
         <script src="../build/lib/MarkerlessARJS.js"></script>
         <script src="../data/three.min.js"></script>
-        <script src="../build/lib/renderer.js"></script>
+        <script src="renderer.js"></script>
         <script>
             var canvasElement = document.getElementById('canvas');
 
@@ -32,12 +32,9 @@
                 console.log(ok);
                 var loc = pipeline.getPatternMat44();
                 console.log(loc);
-                //var h = pipeline.getHomography();
-                var h = [];
-                console.log(h);
                 var corners = pipeline.getCorners();
                 console.log(corners);
-                renderThreeJS(ok, projMat, loc, h, corners);
+                renderThreeJS(ok, projMat, loc, corners);
             }
 
             var imread = function (imageSource) {
