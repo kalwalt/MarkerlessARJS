@@ -101,32 +101,20 @@ macro(ADD_LIB app ES6)
 
   if(${ES6} STREQUAL 0)
     set(ES6_FLAG " ")
-    else()
+  else()
     set(ES6_FLAG " -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -s MODULARIZE=1 ")
   endif()
 
   set(WASM "-s WASM=1")
   set(SINGLE_FILE " -s SINGLE_FILE=1 ")
-  if(${HTML_LIB} EQUAL 1)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-  else()
-    set(CMAKE_EXECUTABLE_SUFFIX ".js")
-  endif()
-  if(${HTML_LIB} EQUAL 1)
-    set_target_properties(
-      ${app}
-      PROPERTIES
-        LINK_FLAGS
-        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SIMD} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind --shell-file ${PROJECT_SOURCE_DIR}/shell.html"
-    )
-  else()
-    set_target_properties(
-      ${app}
-      PROPERTIES
-        LINK_FLAGS
-        "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SIMD} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
-    )
-  endif()
+  set(CMAKE_EXECUTABLE_SUFFIX ".js")
+
+  set_target_properties(
+    ${app}
+    PROPERTIES
+      LINK_FLAGS
+      "${OPTIMIZE_OPTIONS} ${MODULE_OPTIONS} ${WASM} ${SIMD} ${ES6_FLAG} ${SINGLE_FILE} ${USE_GLFW} ${MEMORY} ${OPTIMIZE_EMCC} ${EMBED_FILE} --bind "
+  )
 
 endmacro()
 
