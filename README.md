@@ -9,8 +9,10 @@ These are the classes ported to JavaScript:
 
 ## Example
 
-A simple example is provided in the *build/lib* folder. Running the example in a http server, you will see in the browser a an image of the pinball image with a blue rectangle around it; look also in the console with some useful information.
-This example bundle in the .html file all the wasm code, if you modify the C++ code or the shell.html file you need to rebuild the whole project with Emscripten.
+Two examples are provided in the *examples* folder. You need to run the examples with an http server. The `MarkerlessARJS_basic_example.html` will display  in the browser a sphere and a blue rectangle around it; look also in the console with some useful information.
+Instead the `MarkerlessARJS_webcam_example.html` will display a sphere onto the pinball image (included in the project). 
+Note that you need to rebuild the whole project with Emscripten only if you modify the C++ code and after build the dist library with the command:
+`npm run build-es6`
 
 ## Dependencies
 
@@ -20,6 +22,6 @@ This example bundle in the .html file all the wasm code, if you modify the C++ c
 
 ## Next features
 
-- [ ] js library wih all the classes and functions from the project as a separate bundle.
-- [ ] ES6 version of the library.
-- [ ] 3d rendering example witth three.js library.
+- [x] js library wih all the classes and functions from the project as a separate bundle.
+- [x] ES6 version of the library.
+- [x] 3d rendering example with three.js library. (partial working example...)
