@@ -21,7 +21,7 @@
 
 PatternDetector::PatternDetector(cv::Ptr<cv::FeatureDetector> detector,
     cv::Ptr<cv::DescriptorExtractor> extractor,
-    cv::Ptr<cv::DescriptorMatcher> matcher,
+    cv::Ptr<cv::BFMatcher> matcher,
     bool ratioTest)
     : m_detector(detector)
     , m_extractor(extractor)

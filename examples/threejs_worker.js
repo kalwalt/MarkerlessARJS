@@ -71,10 +71,10 @@ function start(video, input_width, input_height, render_update, track_update) {
     oy = (ph - h) / 2;
     console.log("vw: ", vw, "vh: ", vh);
     console.log("ox: ", ox, "oy: ", oy, "w: ", w, "h: ", h, "pw: ", pw, "ph: ", ph);
-    canvas_process.style.clientWidth = pw*2 + "px";
-    canvas_process.style.clientHeight = ph*2 + "px";
-    canvas_process.width = pw*2;
-    canvas_process.height = ph*2;
+    canvas_process.style.clientWidth = pw + "px";
+    canvas_process.style.clientHeight = ph + "px";
+    canvas_process.width = pw;
+    canvas_process.height = ph;
 
     renderer.setSize(sw, sh);
 
@@ -169,8 +169,8 @@ function start(video, input_width, input_height, render_update, track_update) {
 
   var process = function () {
     context_process.fillStyle = 'black';
-    context_process.fillRect(0, 0, pw*2, ph*2);
-    context_process.drawImage(video, 0, 0, vw, vh, ox, oy, w*2, h*2);
+    context_process.fillRect(0, 0, pw, ph);
+    context_process.drawImage(video, 0, 0, vw, vh, ox, oy, w, h);
 
     var imageData = context_process.getImageData(0, 0, pw, ph);
     worker.postMessage({ type: "video_data", data: imageData, videoWidth: input_width, videoHeight: input_height }, [imageData.data.buffer]);
