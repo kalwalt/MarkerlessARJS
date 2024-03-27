@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkerlessARJS.js basic example</title>
+</head>
+
+<body>
+    <img id="pinball" width="1637" height="2048" src="../../data/pinball.jpg" style="display: none" />
+    <img id="pinball-test" width="4000" height="3000" src="../../data/pinball-test.jpg" style="display: none" />
+    <canvas id="canvas" style="position:absolute; top:0; left:0; width:1280; z-index:120">
+        <script src="../build/lib/MarkerlessARJS.js"></script>
+        <script src="../data/three.min.js"></script>
+        <script src="renderer.js"></script>
+        <script>
+            var canvasElement = document.getElementById('canvas');
+
+            Module.onRuntimeInitialized = async function () {
+
+                var pipeline;
+                var cc = new Module.CameraCalibration(4000, 3000, 2000, 1500);
+                console.log(cc);
+                var projMat = Module.buildProjectionMatrix(cc, 0.01, 1000.0, 4000, 3000);
+                console.log(projMat);
+                var pinball_buff = imread('pinball');
+                pipeline = new Module.ARPipeline(1637, 2048, pinball_buff, cc);
+                console.log(pipeline);
+                var pinball_test_buff = imread('pinball-test');
+                var ok = pipeline.processFrame(pinball_test_buff, 4000, 3000);
+                console.log(ok);
+                var loc = pipeline.getPatternMat44();
+                console.log(loc);
+                var corners = pipeline.getCorners();
+                console.log(corners);
+                renderThreeJS(ok, projMat, loc, corners);
+            }
+
+            var imread = function (imageSource) {
+                var img = null;
+                if (typeof imageSource === 'string') {
+                    img = document.getElementById(imageSource);
+                } else {
+                    img = imageSource;
+                }
+                var canvas = null;
+                var ctx = null;
+                if (img instanceof HTMLImageElement) {
+                    canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                } else if (img instanceof HTMLCanvasElement || img instanceof OffscreenCanvas) {
+                    canvas = img;
+                    ctx = canvas.getContext('2d');
+                } else {
+                    throw new Error('Please input the valid canvas or img id.');
+                    return;
+                }
+
+                var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                return imgData.data;
+            };
+        </script>
+
+</body>
+
+</html>

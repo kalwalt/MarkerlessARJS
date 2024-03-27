@@ -29,8 +29,9 @@ public:
     PatternDetector
         (
         cv::Ptr<cv::FeatureDetector>     detector = cv::ORB::create(1000),
-        cv::Ptr<cv::DescriptorExtractor> extractor = cv::xfeatures2d::FREAK::create(false, false),
-        cv::Ptr<cv::DescriptorMatcher>   matcher   = cv::BFMatcher::create(cv::NORM_HAMMING, true),
+        //cv::Ptr<cv::DescriptorExtractor> extractor = cv::xfeatures2d::FREAK::create(false, false),
+        cv::Ptr<cv::DescriptorExtractor> extractor = cv::ORB::create(1000),
+        cv::Ptr<cv::BFMatcher>   matcher   = cv::BFMatcher::create(cv::NORM_HAMMING, true),
         bool enableRatioTest                       = false
         );
 
