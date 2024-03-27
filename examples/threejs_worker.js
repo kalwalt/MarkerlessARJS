@@ -84,7 +84,7 @@ function start(video, input_width, input_height, render_update, track_update) {
 
     if (pinball_buff) {
       console.log("pinball_buff: ", pinball_buff)
-      worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048 }, [pinball_buff.buffer]);
+      worker.postMessage({ type: "pinball", buff: pinball_buff, width: 1637, height: 2048, vSizeWidth: pw, vSizeHeight: ph }, [pinball_buff.buffer]);
     }
 
     worker.onerror = function(e) {
